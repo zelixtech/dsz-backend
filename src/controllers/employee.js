@@ -22,10 +22,23 @@ const validateEmployee = (employee) => {
 
 const createEmployee = async (req, res) => {
   try {
-    const data = req.body;
-    const { error } = validateEmployee(data.employee);
+    const payload = {
+      employee_name: req.body.employee.employee_name,
+      employee_designation: req.body.employee.employee_designation,
+      employee_doj: req.body.employee.employee_doj,
+      employee_office_email: req.body.employee.employee_office_email,
+      employee_email: req.body.employee.employee_email,
+      employee_mobile: req.body.employee.employee_mobile,
+      employee_dob: req.body.employee.employee_dob,
+      employee_address: req.body.employee.employee_address,
+      employee_relieve_date: req.body.employee.employee_relieve_date,
+      employee_department: req.body.employee.employee_department,
+      employee_isAdmin: req.body.employee.employee_isAdmin || false,
+    }
+    const { value, error } = validateEmployee(payload);
     if (error) {
       // return { validationError: true }
+      console.log(error);
       return res.json({
         errorType: 'Bad Request',
         errorMessage: "Validation Error",
@@ -35,9 +48,9 @@ const createEmployee = async (req, res) => {
     var employeeExists = await db.employee.findOne({
       where: {
         [Op.or]: [
-          { employee_email: data.employee.employee_email },
-          { employee_mobile: data.employee.employee_mobile },
-          { employee_office_email: data.employee.employee_office_email },
+          { employee_email: payload.employee_email },
+          { employee_mobile: payload.employee_mobile },
+          { employee_office_email: payload.employee_office_email },
         ]
       }
     })
@@ -50,10 +63,14 @@ const createEmployee = async (req, res) => {
       })
     }
 
-    const newEmployee = db.employee.build(data.employee)
+    const newEmployee = db.employee.build(payload)
     await newEmployee.save();
     console.log(newEmployee)
-    return { newEmployee };
+    // return { newEmployee };
+    return res.json({
+      error: false,
+      data: newEmployee
+    })
   }
   catch (err) {
     console.log(err);

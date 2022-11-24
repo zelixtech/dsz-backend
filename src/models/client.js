@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true
     },
     client_name: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     client_mobile: {
@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
       unique: "client_mobile_UNIQUE"
     },
     client_email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(320),
       allowNull: false,
       unique: "client_email_UNIQUE"
     },
@@ -26,11 +26,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     client_city: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     client_industry: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     client_blocked: {

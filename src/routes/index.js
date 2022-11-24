@@ -1,3 +1,4 @@
 const employee = require('./employee')
+const client = require('./client')
 
-module.exports = { employee }
+module.exports = { client, employee }
