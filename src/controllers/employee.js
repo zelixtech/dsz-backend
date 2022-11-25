@@ -1,24 +1,6 @@
 const { db } = require('../startup/db');
 const { Op } = require('sequelize')
-const Joi = require('joi').extend(require('@joi/date'));
-
-const validateEmployee = (employee) => {
-  const employeeSchema = Joi.object({
-    employee_name: Joi.string().min(3).max(255).required(),
-    employee_designation: Joi.string().min(3).max(255).required(),
-    employee_doj: Joi.date().format('YYYY-MM-DD').required(),
-    employee_mobile: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-    employee_office_email: Joi.string().email().min(3).max(320).required(),
-    employee_email: Joi.string().email().min(3).max(320).required(),
-    employee_dob: Joi.date().format('YYYY-MM-DD').required(),
-    employee_address: Joi.string().min(3).max(255).required(),
-    employee_relieve_date: Joi.date().format('YYYY-MM-DD'),
-    employee_department: Joi.string().min(1).max(255).required(),
-    employee_isAdmin: Joi.boolean(),
-  })
-
-  return employeeSchema.validate(employee)
-}
+const validateEmployee = require('../utils/schema');
 
 const createEmployee = async (req, res) => {
   try {

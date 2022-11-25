@@ -7,7 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    quoation_number: {
+    quotation_number: {
       type: DataTypes.STRING(10),
       allowNull: false
     },
@@ -39,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'orders',
+        model: 'order',
         key: 'order_id'
       }
     },

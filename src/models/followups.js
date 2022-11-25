@@ -35,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'orders',
+        model: 'order',
         key: 'order_id'
       }
     },
@@ -50,7 +50,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'followups',
+    tableName: 'followup',
     timestamps: true,
     indexes: [
       {

@@ -1,20 +1,6 @@
 const { db } = require('../startup/db');
 const { Op } = require('sequelize')
-const Joi = require('joi').extend(require('@joi/date'));
-
-const validateClient = (client) => {
-  const clientSchema = Joi.object({
-    client_email: Joi.string().email().min(3).max(320).required(),
-    client_name: Joi.string().min(3).max(255).required(),
-    client_mobile: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-    client_address: Joi.string().min(3).max(255).required(),
-    client_city: Joi.string().min(1).max(255).required(),
-    client_industry: Joi.string().min(1).max(255).required(),
-    client_blocked: Joi.boolean(),
-  })
-
-  return clientSchema.validate(client)
-}
+const validateClient = require('../utils/schema');
 
 const createClient = async (req, res) => {
   try {

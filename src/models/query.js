@@ -21,23 +21,23 @@ module.exports = function (sequelize, DataTypes) {
     },
     query_create_time: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     query_subject: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     query_product: {
-      type: DataTypes.STRING(100),
-      allowNull: true
+      type: DataTypes.STRING(255),
+      allowNull: false
     },
     query_message: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(1024),
+      allowNull: false
     },
     query_state: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     employee_id: {
       type: DataTypes.INTEGER,

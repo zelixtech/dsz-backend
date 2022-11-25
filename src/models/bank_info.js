@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('bank', {
-    bank_id: {
+  return sequelize.define('bank_info', {
+    bank_info_id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,25 +15,25 @@ module.exports = function (sequelize, DataTypes) {
         key: 'employee_id'
       }
     },
-    bank_name: {
-      type: DataTypes.STRING(100),
+    bank_info_name: {
+      type: DataTypes.STRING(255),
       allowNull: false
     },
-    bank_ifsc_code: {
+    bank_info_ifsc_code: {
       type: DataTypes.STRING(11),
       allowNull: false
     },
-    bank_branch_name: {
-      type: DataTypes.STRING(100),
+    bank_info_branch_name: {
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     employee_name_as_in_bank: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'bank',
+    tableName: 'bank_info',
     timestamps: true,
     indexes: [
       {
@@ -45,11 +45,11 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: "bank_id_UNIQUE",
+        name: "bank_info_id_UNIQUE",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "bank_id" },
+          { name: "bank_info_id" },
         ]
       },
       {
