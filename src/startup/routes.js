@@ -9,3 +9,64 @@ module.exports = (app) => {
   app.use('/api/employee', employee);
   app.use('/api/client', client);
 }
+
+
+
+/*
+done
+POST /api/employee/
+GET /api/employee/:id
+PATCH /api/employee/
+DELETE /api/employee/
+
+// login
+PATCH /api/employee/makeAdmin (also in PATCH/employee)
+
+
+POST /api/client/
+GET /api/client/:id
+PATCH /api/client/ (block client)
+DELETE /api/client/
+
+password change and create
+
+
+POST /api/quotation/
+GET /api/quotation/:id
+
+GET /api/client/allQuotations
+
+POST /api/login/
+
+//hr and admin
+PATCH /api/attendance/:employeeid {attendance_status:}
+
+GET /api/attendance/:employee [array of all present and half and leave]
+
+
+// employee
+PATCH /api/employee/bank_info
+GET /api/employee/bank_info
+
+
+POST /api/followup/
+GET /api/followups/:query_id (all followups)
+PATCH /api/followup/:followup_id
+DELETE /api/followup/:followup_id
+
+
+// get products for the given quotation
+// add product for the given quotation
+
+
+// get all new queries
+// get all employee queries
+// create query from frontend
+// create query from apis in backend
+
+// assign query to another employee
+
+
+// admin: delete query
+
+*/

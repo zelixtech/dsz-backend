@@ -12,7 +12,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     client_mobile: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       unique: "client_mobile_UNIQUE"
     },

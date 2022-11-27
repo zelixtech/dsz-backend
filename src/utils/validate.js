@@ -62,7 +62,7 @@ const validateAttendance = (attendance) => {
 
 const validateBankInfo = (bank_info) => {
   const bankInfoSchema = Joi.object({
-    employee_id: Joi.number(),
+    employee_id: Joi.number().required(),
     bank_info_name: Joi.string().min(3).max(255).required(),
     bank_info_ifsc_code: Joi.string().length(11).required(),
     bank_info_branch_name: Joi.string().min(3).max(255).required(),
@@ -132,17 +132,62 @@ const validateQuery = (query) => {
   return querySchema.validate(query);
 }
 
+const validateVendor = (vendor) => {
+  const vendorSchema = Joi.object({
+    purchase_order_id: Joi.number().required(),
+    vendor_name: Joi.string().min(3).max(255).required(),
+    vendor_rate: Joi.number().required(),
+    vendor_product_name: Joi.string().min(3).max(255).required(),
+  })
 
+  return vendorSchema.validate(vendor);
+}
+
+const validatePurchaseOrder = (purchaseOrder) => {
+  const purchaseOrderSchema = Joi.object({
+    product_name: Joi.string().min(3).max(255).required(),
+    purchased_from_vendor_id: Joi.number(),
+    invoice_number: Joi.string().min(1).max(100),
+    payment_status: Joi.string().min(1).max(100).required(),
+  })
+
+  return purchaseOrderSchema.validate(purchaseOrder);
+}
+
+const validateDate = (date) => {
+  // return Joi.attempt(date, Joi.date().format('YYYY-MM-DD'));
+  return Joi.date().format('YYYY-MM-DD').required().validate(date);
+}
+
+// (() => {
+//   try {
+//     console.log(validateDate('1999-12-20'));
+//     const { error } = validateDate('1999-15-20');
+//     if (error) {
+//       console.log('jhi');
+//     }
+//     else {
+//       console.log('ff')
+//     }
+//   }
+//   catch (err) {
+//     console.log(err);
+//     console.log('er');
+//   }
+// })();
 
 module.exports = {
-  validateEmployee,
-  validateClient,
   validateAttendance,
   validateBankInfo,
+  validateClient,
   validateEmployeeLogin,
-  validateQuotation,
-  validateOrder,
+  validateEmployee,
   validateFollowup,
+  validateOrder,
   validateProduct,
-  validateQuery
+  validatePurchaseOrder,
+  validateQuery,
+  validateQuotation,
+  validateVendor,
+  validateDate
 }
