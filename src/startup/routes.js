@@ -1,6 +1,6 @@
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const { employee, client } = require('../routes/')
+const { employee, client, query } = require('../routes/')
 
 
 module.exports = (app) => {
@@ -8,6 +8,7 @@ module.exports = (app) => {
   app.use(bodyParser.json())
   app.use('/api/employee', employee);
   app.use('/api/client', client);
+  app.use('/api/query', query);
 }
 
 

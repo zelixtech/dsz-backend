@@ -32,7 +32,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     query_message: {
-      type: DataTypes.STRING(1024),
+      type: DataTypes.STRING(5000),
       allowNull: false
     },
     query_state: {

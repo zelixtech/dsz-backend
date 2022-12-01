@@ -1,5 +1,4 @@
 const { db } = require('../startup/db');
-const { Op } = require('sequelize')
 const { validateBankInfo } = require('../utils/validate');
 
 const updateEmployeeBankInfo = async (req, res) => {

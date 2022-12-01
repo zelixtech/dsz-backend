@@ -2,10 +2,30 @@ const { db } = require('../startup/db');
 const { Op } = require('sequelize')
 const validateQuotation = require('../utils/validate');
 
+
+// const quotation = async (req, res) => {
+//   try {
+//     const payload = {
+//       query_id: req.body.data.query_id,
+//       employee_id: req.body.data.employee_id,
+//       product_list: req.body.data.product_list,
+
+//     }
+//     product_list = [{
+//       "name": "coat",
+
+//     }]
+//     const { product_list }
+//   }
+//   catch (err) {
+//     console.log(err);
+//     res.send('error');
+//   }
+// }
+
 const createQuotation = async (req, res) => {
   try {
     const payload = {
-      quotation_number: req.body.data.quotation_number,
       client_id: req.body.data.client_id,
       employee_id: req.body.data.employee_id,
       query_id: req.body.data.query_id,

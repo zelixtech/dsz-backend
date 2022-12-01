@@ -85,12 +85,11 @@ const validateEmployeeLogin = (employeeLogin) => {
 
 const validateFollowup = (followup) => {
   const followupSchema = Joi.object({
-    client_id: Joi.number().required(),
-    employee_id: Joi.number().required(),
+    // client_id: Joi.number().required(),
+    // employee_id: Joi.number().required(),
     query_id: Joi.number().required(),
-    order_id: Joi.number().required(),
+    // order_id: Joi.number().required(),
     followup_text: Joi.string().min(1).max(255).required(),
-    followup_date: Joi.date().format('YYYY-MM-DD').required(),
   })
 
   return followupSchema.validate(followup);
@@ -122,7 +121,7 @@ const validateQuery = (query) => {
     client_id: Joi.number().required(),
     employee_id: Joi.number(),
     query_source: Joi.string().min(3).max(255).required(),
-    query_create_time: Joi.string().min(3).max(255).required(),
+    query_create_time: Joi.date().required(),
     query_subject: Joi.string().min(3).max(255).required(),
     query_product: Joi.string().min(3).max(255).required(),
     query_message: Joi.string().min(3).max(1024).required(),
@@ -159,6 +158,14 @@ const validateDate = (date) => {
   return Joi.date().format('YYYY-MM-DD').required().validate(date);
 }
 
+const validateFollowupText = (followup) => {
+  const schema = Joi.object({
+    followup_id: Joi.number().required(),
+    followup_text: Joi.string().min(1).max(255).required()
+  })
+  return schema.validate(followup);
+}
+
 // (() => {
 //   try {
 //     console.log(validateDate('1999-12-20'));
@@ -176,6 +183,14 @@ const validateDate = (date) => {
 //   }
 // })();
 
+// (() => {
+//   const time = Joi.date().timestamp('javascript').validate(1669558022);
+//   console.log(time);
+//   console.log(Joi.date().timestamp('javascript').validate(900000000));
+//   console.log(Joi.date().timestamp('unix').validate(900000000));
+//   console.log(Joi.date().timestamp('unix').validate(1669558022));
+// })()
+
 module.exports = {
   validateAttendance,
   validateBankInfo,
@@ -189,5 +204,6 @@ module.exports = {
   validateQuery,
   validateQuotation,
   validateVendor,
-  validateDate
+  validateDate,
+  validateFollowupText
 }

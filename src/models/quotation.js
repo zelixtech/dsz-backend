@@ -11,36 +11,12 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(10),
       allowNull: false
     },
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'client',
-        key: 'client_id'
-      }
-    },
-    employee_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'employee',
-        key: 'employee_id'
-      }
-    },
     query_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'query',
         key: 'query_id'
-      }
-    },
-    order_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'order',
-        key: 'order_id'
       }
     },
     quotation_terms: {
@@ -91,31 +67,10 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: "client_id_idx",
-        using: "BTREE",
-        fields: [
-          { name: "client_id" },
-        ]
-      },
-      {
         name: "query_id_idx",
         using: "BTREE",
         fields: [
           { name: "query_id" },
-        ]
-      },
-      {
-        name: "employee_id_idx",
-        using: "BTREE",
-        fields: [
-          { name: "employee_id" },
-        ]
-      },
-      {
-        name: "order_id_idx",
-        using: "BTREE",
-        fields: [
-          { name: "order_id" },
         ]
       },
     ]
