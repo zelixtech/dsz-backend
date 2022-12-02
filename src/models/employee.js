@@ -53,6 +53,14 @@ module.exports = function (sequelize, DataTypes) {
     employee_isAdmin: {
       type: DataTypes.TINYINT,
       allowNull: false
+    },
+    employee_isHR: {
+      type: DataTypes.TINYINT,
+      allowNull: false
+    },
+    employee_password: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
     }
   }, {
     sequelize,

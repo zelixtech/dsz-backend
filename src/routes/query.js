@@ -12,5 +12,6 @@ router.get('/:query_id', queryController.getQuery)
 router.post('/', queryController.createQuery)
 router.patch('/assign', queryController.assignQueryToEmployee)
 router.patch('/:query_id', queryController.updateQuery)
+router.get('/', queryController.getThings);
 
 module.exports = router

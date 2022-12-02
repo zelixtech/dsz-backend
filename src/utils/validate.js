@@ -3,6 +3,7 @@ const Joi = require('joi').extend(require('@joi/date'));
 const validateEmployee = (employee) => {
   const employeeSchema = Joi.object({
     employee_name: Joi.string().min(3).max(255).required(),
+    employee_password: Joi.string().min(3).max(255).required(),
     employee_designation: Joi.string().min(3).max(255).required(),
     employee_dob: Joi.date().format('YYYY-MM-DD').required(),
     employee_doj: Joi.date().format('YYYY-MM-DD').min(Joi.ref('employee_dob')).required(),
@@ -13,6 +14,7 @@ const validateEmployee = (employee) => {
     employee_address: Joi.string().min(3).max(255).required(),
     employee_department: Joi.string().min(1).max(255).required(),
     employee_isAdmin: Joi.boolean(),
+    employee_isHR: Joi.boolean(),
   })
 
   return employeeSchema.validate(employee)
@@ -166,6 +168,15 @@ const validateFollowupText = (followup) => {
   return schema.validate(followup);
 }
 
+const validateLogin = (login) => {
+  const schema = Joi.object({
+    email: Joi.string().email().min(3).max(320).required(),
+    password: Joi.string().min(8).max(15).required()
+  })
+
+  return schema.validate(login);
+}
+
 // (() => {
 //   try {
 //     console.log(validateDate('1999-12-20'));
@@ -205,5 +216,6 @@ module.exports = {
   validateQuotation,
   validateVendor,
   validateDate,
-  validateFollowupText
+  validateFollowupText,
+  validateLogin
 }

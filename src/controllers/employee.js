@@ -1,6 +1,8 @@
 const { db } = require('../startup/db');
 const { Op } = require('sequelize')
 const { validateEmployee, validateDate } = require('../utils/validate');
+const saltRounds = 10;
+const bcrypt = require('bcrypt')
 
 const createEmployee = async (req, res) => {
   try {
@@ -16,6 +18,8 @@ const createEmployee = async (req, res) => {
       employee_relieve_date: req.body.data.employee_relieve_date,
       employee_department: req.body.data.employee_department,
       employee_isAdmin: req.body.data.employee_isAdmin || false,
+      employee_isHR: req.body.data.employee_isHR || false,
+      employee_password: req.body.data.employee_password
     }
     const { value, error } = validateEmployee(payload);
     if (error) {
@@ -44,7 +48,8 @@ const createEmployee = async (req, res) => {
         error: true,
       })
     }
-
+    const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
+    payload.employee_password = hash;
     const newEmployee = db.employee.build(payload)
     await newEmployee.save();
     console.log(newEmployee)

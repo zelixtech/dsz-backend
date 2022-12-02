@@ -1,5 +1,6 @@
 const { db } = require('../startup/db');
 const { validateQuery } = require('../utils/validate');
+const { client } = require('../models/client');
 
 const createQuery = async (req, res) => {
   try {
@@ -315,8 +316,19 @@ const assignQueryToEmployee = async (req, res) => {
 }
 
 
-// (async () => {
-//   await getAllUnassignedQueries()
-// })()
+const getThings = async (req, res) => {
+  // console.log({ client: db.client });
+  let results = await db.query.findOne({
+    where: {
+      query_id: 1
+    },
+    include: [{
+      model: db.client,
+      as: "client"
+    }]
+  })
+  console.log(results);
+  res.json({ results })
+};
 
-module.exports = { createQuery, getQuery, updateQuery, getAllQueries, getAllQueriesAssignedToEmployee, getAllUnassignedQueries, assignQueryToEmployee, getAllQueriesAssignedToClient }
+module.exports = { createQuery, getQuery, updateQuery, getAllQueries, getAllQueriesAssignedToEmployee, getAllUnassignedQueries, assignQueryToEmployee, getAllQueriesAssignedToClient, getThings }

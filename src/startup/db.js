@@ -1,5 +1,7 @@
 const { Sequelize } = require('sequelize');
 const models = require('../models/init-models')
+const expressSession = require('express-session');
+const SessionStore = require('express-session-sequelize')(expressSession.Store);
 
 const sequelize = new Sequelize(process.env.DB, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
@@ -12,7 +14,7 @@ const sequelize = new Sequelize(process.env.DB, process.env.DB_USER, process.env
 const createPool = async () => {
   try {
     await sequelize.authenticate();
-    // await sequelize.sync({ force: true })
+    // await sequelize.sync({ alter: true })
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
@@ -20,6 +22,17 @@ const createPool = async () => {
 }
 createPool();
 
-const db = models(sequelize);
 
-module.exports = { sequelize, db }
+
+const db = models(sequelize);
+// const sessionStore = new MySQLStore({}/* session store options */, sequelize);
+const sequelizeSessionStore = new SessionStore({
+  db: sequelize,
+});
+
+
+module.exports = {
+  sequelize, db,
+  sequelizeSessionStore,
+  expressSession
+}
