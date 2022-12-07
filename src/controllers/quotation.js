@@ -25,18 +25,70 @@ const validateQuotation = require('../utils/validate');
 
 const createQuotation = async (req, res) => {
   try {
+    // Does Query Exists?
+    // Does Employee Sending Quotation and  Employee Assigned the QUery Same?
+
+
     const payload = {
-      client_id: req.body.data.client_id,
-      employee_id: req.body.data.employee_id,
-      query_id: req.body.data.query_id,
-      order_id: req.body.data.order_id,
+      query_id: req.params.query_id,
       quotation_terms: req.body.data.quotation_terms,
-      quotation_total_no_of_products: req.body.data.quotation_total_no_of_products,
-      quotation_total_quantity: req.body.data.quotation_total_quantity,
-      quotation_total_amount: req.body.data.quotation_total_amount,
-      quotation_date: req.body.data.quotation_date,
       quotation_currency: req.body.data.quotation_currency,
     }
+
+    if (isNaN(payload.query_id) || !req.body.products || !req.body.rproducts) {
+      // validation error
+      return;
+    }
+    const query = await db.query.findByPk(payload.query_id, {
+      include: [{
+        model: db.client,
+        as: "client"
+      }]
+    });
+    if (!query) {
+      // query for which quotation is being created dne
+      return;
+    }
+    if (query.dataValues.employee_id !== payload.employee_id) {
+      // person creating quotation is not assigned the query
+      return;
+    }
+
+    // check products are valid or not?
+    // const productArray = [];
+    // for (product in req.body.products) {
+    //   const productPayload = {
+    //     quotation_id: Joi.number().required(),
+    //     product_isRecommendation: Joi.boolean(),
+    //     product_selling_rate: Joi.number().required(),
+    //     product_quantity: Joi.number().required()
+    //   }
+    // } 
+
+
+    /*
+    data[0].products.forEach((d, i) => {
+      const prod = {
+        id: i + 1,
+        description: d.name,
+        data: d.data[0],
+        quantity: d.quantity,
+        thikness: d.thikness,
+        rate: d.rate.toLocaleString('en-IN', {
+          style: 'currency',
+          currency: 'INR'
+        }),
+        unit: d.unit,
+        total: d.quantity * d.rate,
+        subtotal: (d.quantity * d.rate).toLocaleString('en-IN', {
+          style: 'currency',
+          currency: 'INR'
+        })
+      }
+      array.push(prod);
+    });
+    */
+
     const { value, error } = validateQuotation(payload);
     if (error) {
       // return { validationError: true }

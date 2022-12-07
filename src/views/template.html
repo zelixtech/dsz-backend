@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pdf Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    p {
+      font-size: 11px;
+      margin: 0px;
+      font-weight: 800;
+    }
+
+    td>h6 {
+      margin-bottom: 1px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    td>b {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .red {
+      color: red;
+    }
+
+    td {
+      padding-top: 1px;
+      padding-left: 5px;
+    }
+  </style>
+</head>
+
+<body style="font-size: 12px; padding:20px 10px; width: 1000px; margin:0px auto">
+  <table width="100%" border="1" cellspacing="0" cellpadding="0" style="border-top: solid black 2px;
+    border-left: solid black 2px;
+    border-right: solid black 1px;">
+    <tr>
+      <td colspan="6" align="left" valign="top" bgcolor="#ffe77b" style="background-color:#fff;">
+        <img height="70" width="350" style="padding:2px 0px 2px 0px;"
+          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzRqKOwa_vQ4lywIP3nghnBi2LTSPZhDRWYOSpUZxsn4H_aGS4rqIKD4pbkjt-u5UcfulNShlMNICE0hu1j8y7WWjDQSdN5tE1jEA58IqxTeKCz5ARzdjo5j3tdTbgLVIXsmo9CqXOryD6snryD_ngwEEYf__SMMRuJ1E1NRiAJ2Ulob4FD2ypyjW9_w/s420/DSZ%20Letter%20Head.png"
+          alt="">
+        <img align="right" height="70" width="200" style="padding:2px 7px 2px 0px;"
+          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhIJh2MFIyRZhaUjxqiYKmyGi51r6HBuPCkb_JgfcVLg8VwyhdEb3sp8auBdBz4e1kwQ0LYarrTzKQMbajz9Gflb0GbiBSm0TIp6_nbbbid8FbCEdaFF1UPDeoWg-w3qDXNzWkMfI_jV3aa975TQbepTsWCjf-Ir2jIpiHx0IT-5InkmJ6N_pG258wFww/s1847/Signature%20DSZ.png"
+          alt="">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="6" align="center" valign="top" bgcolor="#ffe77b" style="background-color:#fff;">
+        <h2 style="font-size: 30px;font-weight: 600; color: rgb(0, 0, 0); margin-top: 10px;">Quotation Book</h2>
+      </td>
+
+    </tr>
+
+    <tr>
+      <td rowspan="3">
+        <p>Darshan Safety Zone</p>
+        <p>5,DHARMKUJ,NR.MUKTIDHAM ESTATE,B/H.PANCHAM MALL,NIKOL GAM</p>
+        <p>ROAD,AHMEDABAD-382 350</p>
+        <p>MO: +91 9429128748 & 9712579456 & 9978619456</p>
+        <p>Website : www.fireblanket.in</p>
+        <p>GSTIN/UIN : 24AKQPP5799M1Z0</p>
+        <p>Email: urvisha@darshansafetyzone.in</p>
+      </td>
+
+      <td colspan="1">
+        <h6>Quotation No</h6>
+        <b>DSZ0822U/2021-22</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Dated</h6>
+        <b>01-11-22</b>
+      </td>
+
+    </tr>
+    <tr>
+      <td colspan="1">
+        <h6>Buyers's Requirement No</h6>
+        <b style="color: red;">By Mail</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Offer Validity</h6>
+        <p>30 Working Days</p>
+      </td>
+
+    </tr>
+    <tr>
+      <td colspan="1">
+        <h6>Suppliers's Ref. No.</h6>
+        <b>2022-2023</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Payment Terms</h6>
+        <b style="color: red;">100% Advanced</b>
+      </td>
+
+    </tr>
+
+
+    <tr>
+
+      <td rowspan="1">
+        <p>Consignee</p>
+      </td>
+
+      <td colspan="1">
+        <h6>Seller Name</h6>
+        <b>{{products.sender.name}}</b>
+        <br />
+        <b>{{products.sender.mobile}}</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Buyer's Name</h6>
+        <b>{{products.client.name}}</b>
+        <br />
+        <b>{{products.client.mobile}}</b>
+      </td>
+
+    </tr>
+    <tr>
+      <td rowspan="2">
+        <P>{{products.client.company}}</P>
+        <p style="width:400px;">Address: {{products.client.address}}</p>
+        <p>GST IN: {{products.client.gst}}</p>
+        <p>Email: {{products.client.email}}</p>
+        <p>Contact : {{products.client.mobile}}</p>
+      </td>
+
+      <td colspan="1">
+        <h6>Dispatch Through</h6>
+        <b>As Per your Suggestion</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Destination</h6>
+        <b>As Per your Suggestion</b>
+      </td>
+
+    </tr>
+    <tr>
+      <td colspan="1">
+        <h6>Terms of Delivery</h6>
+        <b>Available in Ready Stock</b>
+      </td>
+
+      <td colspan="4">
+        <h6>Total Bundle</h6>
+        <b>As Per Actual</b>
+      </td>
+
+    </tr>
+  </table>
+  <table width="100%" border="1" cellspacing="0" cellpadding="0" style="border-bottom: solid black 2px;
+    border-left: solid black 2px;
+    border-right: solid black 1px;">
+    <tr style="font-weight:800;">
+      <td>Sr No.</td>
+      <td>Description Of Goods</td>
+      <td>Quantity</td>
+      <td>Rate</td>
+      <td>Unit</td>
+      <td>Amount</td>
+    </tr>
+    <!-- <tr style="font-weight: 700;">
+      <td width="30px">1</td>
+      <td width="548px">
+        <p class="red"> Silica Fabric DSZHS96.0.8 </p>
+        Working Temp.: 1100 C <br>
+        Melting Point: 1860 C <br>
+        Thickness: 0.8 mm <br>
+        Size: 1 X 50 Meter <br>
+        Colour: Light Golden <br>
+        100% Non Asbestos Itching Free Material <br>
+        &nbsp;<br>
+        &nbsp;<br>
+      </td>
+
+      <td>150</td>
+      <td>₹900.00</td>
+      <td>SQM</td>
+      <td>₹1,35,000.00</td>
+    </tr> -->
+
+    {{#each products.prodlist}}
+    <tr style="font-weight: 700;">
+      <td width="30px">{{this.id}}</td>
+      <td width="552px">
+        <p class="red" style="padding-bottom: 1px;">{{this.description}}</p>
+
+        <p>Model No: {{this.data.ModelNo}}</p>
+        <p>Working Temp: {{this.data.WorkingTempRange}}</p>
+        <p>Melting Point: {{this.data.MeltingPoint}}</p>
+        <p>Thikness: {{this.thikness}}</p>
+        <p>Color: {{this.data.Color}}</p>
+
+      </td>
+      <td>{{this.quantity}}</td>
+      <td>{{this.rate}}</td>
+      <td>{{this.unit}}</td>
+      <td>{{this.subtotal}}</td>
+    </tr>
+    {{/each}}
+
+    {{#ifCond products.IsRP '!==' 0 }}
+
+    <tr>
+      <td colspan="6">
+        <p align="center" style="padding: 2px 0px; color: red;">
+          OR
+        </p>
+      </td>
+    </tr>
+
+    {{#each products.rprodlist}}
+    <tr style="font-weight: 700;">
+      <td width="30px">{{this.id}}</td>
+      <td width="552px">
+        <p class="red" style="padding-bottom: 1px;">{{this.description}}</p>
+
+        <p>Model No: {{this.data.ModelNo}}</p>
+        <p>Working Temp: {{this.data.WorkingTempRange}}</p>
+        <p>Melting Point: {{this.data.MeltingPoint}}</p>
+        <p>Thikness: {{this.thikness}}</p>
+        <p>Color: {{this.data.Color}}</p>
+
+      </td>
+      <td>{{this.quantity}}</td>
+      <td>{{this.rate}}</td>
+      <td>{{this.unit}}</td>
+      <td>{{this.subtotal}}</td>
+    </tr>
+    {{/each}}
+
+    {{/ifCond}}
+
+
+
+
+    <tr style="color: red; font-weight: 800;">
+      <td colspan="2">
+        <p align="right">
+          Transportation is To PAY Basis&nbsp; <br>
+          Packaging And Forwarding Charges&nbsp; <br>
+          Output IGST 18%&nbsp; <br>
+        </p>
+        <p align="left">
+          &nbsp; Transportation : Booking For Transporter's Warehouse; TO PAY <br>
+          &nbsp; Brand: Signatuer By DSZ <br>
+          &nbsp; HSN Code 7019<br>
+        </p>
+      </td>
+      <td></td>
+      <td align="center">&nbsp;<br>
+        18.00 %</td>
+      <td></td>
+      <td align="center">TO PAY <br>
+        {{products.tax}}</td>
+    </tr>
+
+    <tr style="font-weight: 800;">
+      <td colspan="2">
+        <p align="center">
+          Total
+        </p>
+
+      </td>
+      <td align="center">150 </td>
+      <td></td>
+      <td align="center">SQM</td>
+      <td align="center">{{products.gtotal}}</td>
+    </tr>
+
+    <tr>
+      <td colspan="6">
+        <p align="left">
+          &nbsp;Amount Chargable( In Word)
+        </p>
+        <p>
+          &nbsp;{{products.gtotalInword}} Only For,<span style="float:right">Darshan
+            Safety Zone&nbsp;&nbsp;&nbsp;</span>
+
+        </p>
+        <p align="left">
+          &nbsp;VAT TIN NO: 24075300574
+        </p>
+        <p align="left">
+          &nbsp;CST NO: 24575300574 <span style="float:right">Authorised Signatory&nbsp;&nbsp;&nbsp;</span>
+        </p>
+        <p align="left">
+          &nbsp;P.A.NO AKQPP5799M
+        </p>
+
+      </td>
+    </tr>
+
+
+    {{#ifCond products.IsTAC '!==' 0 }}
+
+    <tr>
+      <td colspan="6">
+        <p>
+          Additional Terms & Conditions
+        </p>
+        <!-- <p style="white-space: pre-line; padding: 0px">{{products.TAC}}</p> -->
+        </p>
+        <ol style="margin-left:25px; font-weight:500">
+          {{#each products.TAC}}
+          <li>{{this.data}}</li>
+          {{/each}}
+        </ol>
+      </td>
+    </tr>
+
+    {{/ifCond}}
+
+    <tr>
+      <td colspan="6">
+
+        <div style="display:-webkit-flex; width: 60%; margin: 5px auto; padding: 7px 0px;">
+
+          <span style="margin: 0px 20px;">
+            <p style="padding-bottom: 5px;">Prepared By</p>
+            <p style="font-weight:500">Ms Urvisha Patel</p>
+            <p style="font-weight:500">For Darshan Safety Zone</p>
+          </span>
+
+          <span style="margin: 0px 20px;">
+            <p style="padding-bottom: 5px;">Approved By:</p>
+            <p style="font-weight:500">Mr Darshan Pandya</p>
+            <p style="font-weight:500">For Darshan Safety Zone</p>
+          </span>
+
+          <span style="margin: 0px 20px;">
+            <p style="padding-bottom: 5px;">Approved By:</p>
+            <p style="font-weight:500">Mr Monil Sanghrajka</p>
+            <p style="font-weight:500">For AGG Lifesciences and Safety Solutions LLP.</p>
+          </span>
+
+        </div>
+      </td>
+
+    </tr>
+
+    <tr>
+      <td colspan="6">
+        <p align="center" style="padding: 2px 0px;">
+          For Indian Buyers: For Export purpose, We can Sale the Material under LUT, It will contain 0.01% Tax.
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="6">
+
+        <div style="display:-webkit-flex; width: 75%; margin: 5px auto; padding: 7px 0px;">
+
+          <span style="margin: 0px 25px;">
+            <p>Office Adders:</p>
+            <p style="font-weight:500">A-102, Sardar Patel Mall,</p>
+            <p style="font-weight:500">2nd Near Madhav</p>
+            <p style="font-weight:500">Hospital, Nikol Gam Road.</p>
+            <p style="font-weight:500">Bapunagar, Ahmedabad -</p>
+            <p style="font-weight:500">382345</p>
+          </span>
+
+          <span style="margin: 0px 25px;">
+            <p>Factory:</p>
+            <p style="font-weight:500">Plot NO 2 to 4. Arva</p>
+            <p style="font-weight:500">Industrial Park, Village:</p>
+            <p style="font-weight:500">Lalapur, Kubadthal.</p>
+            <p style="font-weight:500">Dashkroi, Ahmedabad -</p>
+            <p style="font-weight:500">382430</p>
+
+          </span>
+
+          <span style="margin: 0px 25px;">
+            <p>Contact:</p>
+            <p style="font-weight:500">+91 9429128748</p>
+            <p style="font-weight:500">+91 9712579456</p>
+            <p style="font-weight:500">491 9978619456</p>
+            <p style="font-weight:500">(Office)</p>
+          </span>
+
+          <span style="margin: 0px 25px;">
+            <p>E-mail:</p>
+            <p style="font-weight:500">info@darshansafetvzone.in</p>
+            <p style="font-weight:500">urvisha@darshansafetvzone.in</p>
+            <p style="font-weight:500">Web: www.fireblanket.in</p>
+            <p style="font-weight:500">www.darshansafetyzone.Com</p>
+            <p style="font-weight:500">www.darshansafetyzone.in</p>
+          </span>
+
+        </div>
+      </td>
+
+    </tr>
+
+  </table>
+
+
+</body>
+
+</html>

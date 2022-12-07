@@ -34,33 +34,43 @@ const validateClient = (client) => {
   return clientSchema.validate(client)
 }
 
+// const validateQuotation = (quotation) => {
+//   const quotationSchema = Joi.object({
+//     quotation_number: Joi.string().min(8).max(12).required(),
+//     client_id: Joi.number().required(),
+//     employee_id: Joi.number().required(),
+//     query_id: Joi.number().required(),
+//     order_id: Joi.number().required(),
+//     quotation_terms: Joi.string().max(1024),
+//     quotation_total_no_of_products: Joi.number().required(),
+//     quotation_total_quantity: Joi.number().required(),
+//     quotation_total_amount: Joi.number().required(),
+//     quotation_date: Joi.date().format('YYYY-MM-DD').required(),
+//     quotation_currency: Joi.string().length(3),
+//   })
+
+//   return quotationSchema.validate(quotation);
+// }
+
 const validateQuotation = (quotation) => {
   const quotationSchema = Joi.object({
-    quotation_number: Joi.string().min(8).max(12).required(),
-    client_id: Joi.number().required(),
-    employee_id: Joi.number().required(),
+    // quotation_number: Joi.string().min(8).max(12).required(),
     query_id: Joi.number().required(),
-    order_id: Joi.number().required(),
     quotation_terms: Joi.string().max(1024),
-    quotation_total_no_of_products: Joi.number().required(),
-    quotation_total_quantity: Joi.number().required(),
-    quotation_total_amount: Joi.number().required(),
-    quotation_date: Joi.date().format('YYYY-MM-DD').required(),
-    quotation_currency: Joi.string().length(3),
+    quotation_currency: Joi.string().length(3).valid('INR', 'USD'),
   })
 
   return quotationSchema.validate(quotation);
 }
 
+// const validateAttendance = (attendance) => {
+//   const attendanceSchema = Joi.object({
+//     employee_id: Joi.number().required(),
+//     attendance_status: Joi.string().min(3).max(10).required(),
+//   })
 
-const validateAttendance = (attendance) => {
-  const attendanceSchema = Joi.object({
-    employee_id: Joi.number().required(),
-    attendance_status: Joi.string().min(3).max(10).required(),
-  })
-
-  return attendanceSchema.validate(attendance);
-}
+//   return attendanceSchema.validate(attendance);
+// }
 
 const validateBankInfo = (bank_info) => {
   const bankInfoSchema = Joi.object({
@@ -203,7 +213,7 @@ const validateLogin = (login) => {
 // })()
 
 module.exports = {
-  validateAttendance,
+  // validateAttendance,
   validateBankInfo,
   validateClient,
   validateEmployeeLogin,

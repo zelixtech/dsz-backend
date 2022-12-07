@@ -15,10 +15,14 @@ module.exports = function (sequelize, DataTypes) {
         key: 'employee_id'
       }
     },
-    attendance_time: {
-      type: DataTypes.DATE,
+    // attendance_time: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    //   defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    // },
+    date_of_attendance: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     attendance_status: {
       type: DataTypes.STRING(10),
