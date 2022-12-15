@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
     )
     if (checkPassword === true) {
       // console.log(r
-      console.log('logged in')
+      // console.log('logged in')
       // const mom = moment()
 
       let current = new Date()
@@ -122,9 +122,13 @@ router.get('/attendance/allEmployees', async (req, res) => {
     })
 
     attendancesOfEachEmployee.forEach((e) => {
-      console.log(e.employee_id)
+      // console.log(e.employee_id)
       const currDate = parseInt(moment().format('DD'))
       const arr = []
+      let absent = 0,
+        half = 0,
+        full = 0,
+        leave = 0
       for (let i = startOfMonth; i <= endOfMonth; ++i) {
         let attendance_status = 'absent'
         if (i > currDate) attendance_status = 'NA'
@@ -136,7 +140,21 @@ router.get('/attendance/allEmployees', async (req, res) => {
         )
         arr[day] = at.dataValues.attendance_status
       })
-      e.dataValues.attendanceArray = arr
+      for (let x in arr) {
+        if (arr[x] === 'half') half++
+        if (arr[x] === 'leave') leave++
+        if (arr[x] === 'full') full++
+        if (arr[x] === 'absent') absent++
+      }
+      e.dataValues.attendance_stats = {
+        half,
+        full,
+        absent,
+        leave,
+        startOfMonth,
+        endOfMonth,
+      }
+      e.dataValues.attendance_array = arr
     })
 
     res.json({
@@ -177,21 +195,39 @@ router.get('/attendance/:employee_id', async (req, res) => {
       if (i > currDate) attendance_status = 'NA'
       arr.push(attendance_status)
     }
+    let absent = 0,
+      half = 0,
+      full = 0,
+      leave = 0
 
     result.forEach((e) => {
       console.log(e)
-      let d = moment(e.date_of_attendance).format('DD')
+      let d = parseInt(moment(e.date_of_attendance).format('DD'))
       arr[d] = e.attendance_status
+      // console.log(arr[d])
     })
 
-    console.log(arr)
+    for (let x in arr) {
+      if (arr[x] === 'half') half++
+      if (arr[x] === 'leave') leave++
+      if (arr[x] === 'full') full++
+      if (arr[x] === 'absent') absent++
+    }
+    const attendance_stats = {
+      half,
+      full,
+      absent,
+      leave,
+      startOfMonth,
+      endOfMonth,
+    }
+    const attendance_array = arr
 
     res.json({
       data: {
         result,
-        arr,
-        startOfMonth,
-        endOfMonth,
+        attendance_stats,
+        attendance_array,
       },
     })
   } catch (err) {
@@ -229,7 +265,7 @@ router.put('/attendance/:employee_id', async (req, res) => {
         attendance_status: payload.attendance_status,
       })
     }
-    console.log(result)
+    // console.log(result)
 
     res.json({
       data: result,
