@@ -110,6 +110,7 @@ router.get('/attendance/allEmployees', async (req, res) => {
             [Op.between]: [startDate, endDate],
           },
         },
+        required: false,
       },
       order: [
         [
@@ -121,6 +122,7 @@ router.get('/attendance/allEmployees', async (req, res) => {
     })
 
     attendancesOfEachEmployee.forEach((e) => {
+      console.log(e.employee_id)
       const currDate = parseInt(moment().format('DD'))
       const arr = []
       for (let i = startOfMonth; i <= endOfMonth; ++i) {
