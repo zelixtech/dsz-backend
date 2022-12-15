@@ -1,27 +1,29 @@
-const fs = require('fs');
-const pdf = require('pdf-creator-node');
-const path = require('path');
+const fs = require('fs')
+const pdf = require('pdf-creator-node')
+const path = require('path')
 // const options = require('../helpers/options');
 // const data = require('../helpers/data');
-var converter = require('number-to-words');
+var converter = require('number-to-words')
 
-let count = 000001;
+let count = 000001
 
 const generatePdf = async (req, res) => {
-
   const data = req.body
 
   console.log(req.body)
 
-  const html = fs.readFileSync(path.join(__dirname, '../views/template.html'), 'utf-8');
+  const html = fs.readFileSync(
+    path.join(__dirname, '../views/template.html'),
+    'utf-8'
+  )
 
-  const filename = "DSZ" + count + '.pdf';
+  const filename = 'DSZ' + count + '.pdf'
 
-  count++;
+  count++
 
-  let array = [];
-  let rarray = [];
-  let TACList = [];
+  let array = []
+  let rarray = []
+  let TACList = []
 
   // console.log(data[0].products);
 
@@ -36,19 +38,17 @@ const generatePdf = async (req, res) => {
       thikness: d.thikness,
       rate: d.rate.toLocaleString('en-IN', {
         style: 'currency',
-        currency: 'INR'
+        currency: 'INR',
       }),
       unit: d.unit,
       total: d.quantity * d.rate,
       subtotal: (d.quantity * d.rate).toLocaleString('en-IN', {
         style: 'currency',
-        currency: 'INR'
-      })
+        currency: 'INR',
+      }),
     }
-    array.push(prod);
-  });
-
-
+    array.push(prod)
+  })
 
   data[0].rproducts.forEach((d, i) => {
     const rprod = {
@@ -59,52 +59,47 @@ const generatePdf = async (req, res) => {
       thikness: d.thikness,
       rate: d.rate.toLocaleString('en-IN', {
         style: 'currency',
-        currency: 'INR'
+        currency: 'INR',
       }),
       unit: d.unit,
       total: d.quantity * d.rate,
       subtotal: (d.quantity * d.rate).toLocaleString('en-IN', {
         style: 'currency',
-        currency: 'INR'
-      })
+        currency: 'INR',
+      }),
     }
-    rarray.push(rprod);
-  });
-
-
-  const TACarray = details.TAC.split(/\r?\n/);
-
-  TACarray.forEach((d) => {
-
-    const tacdata = {
-      data: d
-    }
-
-    TACList.push(tacdata);
-
+    rarray.push(rprod)
   })
 
-  let subtotal = 0;
-  array.forEach(i => {
+  const TACarray = details.TAC.split(/\r?\n/)
+
+  TACarray.forEach((d) => {
+    const tacdata = {
+      data: d,
+    }
+
+    TACList.push(tacdata)
+  })
+
+  let subtotal = 0
+  array.forEach((i) => {
     subtotal += i.total
-  });
+  })
 
-  let tax = (subtotal * 18) / 100;
-  let grandtotal = subtotal + tax;
+  let tax = (subtotal * 18) / 100
+  let grandtotal = subtotal + tax
 
-  const inword = converter.toWords(grandtotal);
+  const inword = converter.toWords(grandtotal)
 
   grandtotal = grandtotal.toLocaleString('en-IN', {
     style: 'currency',
-    currency: 'INR'
-  });
+    currency: 'INR',
+  })
 
   tax = tax.toLocaleString('en-IN', {
     style: 'currency',
-    currency: 'INR'
-  });
-
-
+    currency: 'INR',
+  })
 
   const obj = {
     prodlist: array,
@@ -118,48 +113,45 @@ const generatePdf = async (req, res) => {
     IsRP: details.isRP,
     IsTAC: details.isTAC,
     TAC: TACList,
-
   }
 
   var options = {
-    format: "A3",
-    orientation: "portrait",
-    border: "10mm",
-  };
+    format: 'A3',
+    orientation: 'portrait',
+    border: '10mm',
+  }
 
   var document = {
     html: html,
     data: {
-      products: obj
+      products: obj,
     },
     path: './docs/' + filename,
-    type: "", // "stream" || "buffer" || "" ("" defaults to pdf)
-  };
+    type: '', // "stream" || "buffer" || "" ("" defaults to pdf)
+  }
 
   await pdf
     .create(document, options)
     .then((res) => {
-      console.log(res);
+      console.log(res)
     })
     .catch((error) => {
-      console.error(error);
-    });
+      console.error(error)
+    })
 
-  const filepath = 'http://localhost:8000/docs/' + filename;
-
-
+  const filepath = 'http://localhost:8000/docs/' + filename
 
   var options = {
-    root: "D:\\zelixprojects\\node-quotation-generator\\docs"
-  };
+    root: 'D:\\zelixprojects\\node-quotation-generator\\docs',
+  }
 
-
-  var qoutation = fs.readFileSync('D:\\zelixprojects\\node-quotation-generator\\docs\\' + filename);
-  res.contentType("application/pdf");
-  res.send(qoutation);
+  var qoutation = fs.readFileSync(
+    'D:\\zelixprojects\\node-quotation-generator\\docs\\' + filename
+  )
+  res.contentType('application/pdf')
+  res.send(qoutation)
 }
 
-
 module.exports = {
-  generatePdf
+  generatePdf,
 }

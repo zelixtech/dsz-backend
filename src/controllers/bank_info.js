@@ -1,5 +1,5 @@
-const { db } = require('../startup/db');
-const { validateBankInfo } = require('../utils/validate');
+const { db } = require('../startup/db')
+const { validateBankInfo } = require('../utils/validate')
 
 const updateEmployeeBankInfo = async (req, res) => {
   try {
@@ -11,30 +11,30 @@ const updateEmployeeBankInfo = async (req, res) => {
       employee_id: req.body.data.employee_id,
     }
 
-    const { error } = validateBankInfo(payload);
+    const { error } = validateBankInfo(payload)
     if (error) {
       // return { validationError: true }
-      console.log(error);
+      console.log(error)
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
 
     const employee = await db.employee.findOne({
-      where: { employee_id: payload.employee_id }
-    });
+      where: { employee_id: payload.employee_id },
+    })
     if (!employee) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee do not exists for which bank info is updated",
+        errorMessage: 'Employee do not exists for which bank info is updated',
         error: true,
       })
     }
 
     const employeeBankInfo = await db.bank_info.findOne({
-      where: { employee_id: payload.employee_id }
+      where: { employee_id: payload.employee_id },
     })
     if (employeeBankInfo) {
       employeeBankInfo.update({
@@ -46,24 +46,23 @@ const updateEmployeeBankInfo = async (req, res) => {
       })
       return res.json({
         error: false,
-        data: employeeBankInfo
+        data: employeeBankInfo,
       })
     }
 
     const newEmployeeBankInfo = db.bank_info.build(payload)
-    await newEmployeeBankInfo.save();
+    await newEmployeeBankInfo.save()
     console.log(newEmployeeBankInfo)
     return res.json({
       error: false,
-      data: newEmployeeBankInfo
+      data: newEmployeeBankInfo,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -71,42 +70,40 @@ const updateEmployeeBankInfo = async (req, res) => {
 
 const retrieveEmployeeBankInfo = async (req, res) => {
   try {
-    const employee_id = parseInt(req.params.employee_id);
+    const employee_id = parseInt(req.params.employee_id)
     if (isNaN(employee_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
     let result = await db.bank_info.findOne({
       where: {
-        employee_id: employee_id
-      }
-    });
+        employee_id: employee_id,
+      },
+    })
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { NotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Bank Info Do Not Exists",
+        errorMessage: 'Employee Bank Info Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { bank_info: result }
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -115,7 +112,5 @@ const retrieveEmployeeBankInfo = async (req, res) => {
 // (async () => {
 //   retrieveEmployeeBankInfo({ employee_id: 1 })
 // })()
-
-
 
 module.exports = { updateEmployeeBankInfo, retrieveEmployeeBankInfo }

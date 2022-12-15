@@ -1,6 +1,6 @@
-const { db } = require('../startup/db');
+const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const validateVendor = require('../utils/validate');
+const validateVendor = require('../utils/validate')
 
 const createVendor = async (req, res) => {
   try {
@@ -17,13 +17,13 @@ const createVendor = async (req, res) => {
       vendor_department: req.body.vendor.vendor_department,
       vendor_isAdmin: req.body.vendor.vendor_isAdmin || false,
     }
-    const { value, error } = validateVendor(payload);
+    const { value, error } = validateVendor(payload)
     if (error) {
       // return { validationError: true }
-      console.log(error);
+      console.log(error)
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
@@ -33,33 +33,32 @@ const createVendor = async (req, res) => {
           { vendor_email: payload.vendor_email },
           { vendor_mobile: payload.vendor_mobile },
           { vendor_office_email: payload.vendor_office_email },
-        ]
-      }
+        ],
+      },
     })
     if (vendorExists) {
       // return { userAlreadyExists: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Aldready Exists",
+        errorMessage: 'Employee Aldready Exists',
         error: true,
       })
     }
 
     const newVendor = db.vendor.build(payload)
-    await newVendor.save();
+    await newVendor.save()
     console.log(newVendor)
     // return { newVendor };
     return res.json({
       error: false,
-      data: newVendor
+      data: newVendor,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -67,38 +66,36 @@ const createVendor = async (req, res) => {
 
 const retrieveVendor = async (req, res) => {
   try {
-    const vendor_id = parseInt(req.params.vendor_id);
+    const vendor_id = parseInt(req.params.vendor_id)
     if (isNaN(vendor_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.vendor.findByPk(vendor_id);
+    let result = await db.vendor.findByPk(vendor_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { vendorNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Vendor Do Not Exists",
+        errorMessage: 'Vendor Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { vendor: result }
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -107,7 +104,5 @@ const retrieveVendor = async (req, res) => {
 // (async () => {
 //   retrieveVendor({ Vendor_id: 1 })
 // })()
-
-
 
 module.exports = { createVendor, retrieveVendor }

@@ -1,4 +1,4 @@
-const Joi = require('joi').extend(require('@joi/date'));
+const Joi = require('joi').extend(require('@joi/date'))
 
 const validateEmployee = (employee) => {
   const employeeSchema = Joi.object({
@@ -6,9 +6,17 @@ const validateEmployee = (employee) => {
     employee_password: Joi.string().min(3).max(255).required(),
     employee_designation: Joi.string().min(3).max(255).required(),
     employee_dob: Joi.date().format('YYYY-MM-DD').required(),
-    employee_doj: Joi.date().format('YYYY-MM-DD').min(Joi.ref('employee_dob')).required(),
-    employee_relieve_date: Joi.date().format('YYYY-MM-DD').min(Joi.ref('employee_doj')),
-    employee_mobile: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+    employee_doj: Joi.date()
+      .format('YYYY-MM-DD')
+      .min(Joi.ref('employee_dob'))
+      .required(),
+    employee_relieve_date: Joi.date()
+      .format('YYYY-MM-DD')
+      .min(Joi.ref('employee_doj')),
+    employee_mobile: Joi.string()
+      .length(10)
+      .pattern(/^[0-9]+$/)
+      .required(),
     employee_office_email: Joi.string().email().min(3).max(320).required(),
     employee_email: Joi.string().email().min(3).max(320).required(),
     employee_address: Joi.string().min(3).max(255).required(),
@@ -24,7 +32,10 @@ const validateClient = (client) => {
   const clientSchema = Joi.object({
     client_email: Joi.string().email().min(3).max(320).required(),
     client_name: Joi.string().min(3).max(255).required(),
-    client_mobile: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+    client_mobile: Joi.string()
+      .length(10)
+      .pattern(/^[0-9]+$/)
+      .required(),
     client_address: Joi.string().min(3).max(255).required(),
     client_city: Joi.string().min(1).max(255).required(),
     client_industry: Joi.string().min(1).max(255).required(),
@@ -60,7 +71,7 @@ const validateQuotation = (quotation) => {
     quotation_currency: Joi.string().length(3).valid('INR', 'USD'),
   })
 
-  return quotationSchema.validate(quotation);
+  return quotationSchema.validate(quotation)
 }
 
 // const validateAttendance = (attendance) => {
@@ -81,7 +92,7 @@ const validateBankInfo = (bank_info) => {
     employee_name_as_in_bank: Joi.string().min(3).max(255).required(),
   })
 
-  return bankInfoSchema.validate(bank_info);
+  return bankInfoSchema.validate(bank_info)
 }
 
 //checks
@@ -92,7 +103,7 @@ const validateEmployeeLogin = (employeeLogin) => {
     employee_login_date: Joi.string().min(3).max(255).required(),
   })
 
-  return employeeLoginSchema.validate(employeeLogin);
+  return employeeLoginSchema.validate(employeeLogin)
 }
 
 const validateFollowup = (followup) => {
@@ -104,7 +115,7 @@ const validateFollowup = (followup) => {
     followup_text: Joi.string().min(1).max(255).required(),
   })
 
-  return followupSchema.validate(followup);
+  return followupSchema.validate(followup)
 }
 
 const validateOrder = (order) => {
@@ -114,7 +125,7 @@ const validateOrder = (order) => {
     query_id: Joi.number().required(),
   })
 
-  return orderSchema.validate(order);
+  return orderSchema.validate(order)
 }
 
 const validateProduct = (product) => {
@@ -122,10 +133,10 @@ const validateProduct = (product) => {
     quotation_id: Joi.number().required(),
     product_isRecommendation: Joi.boolean(),
     product_selling_rate: Joi.number().required(),
-    product_quantity: Joi.number().required()
+    product_quantity: Joi.number().required(),
   })
 
-  return productSchema.validate(product);
+  return productSchema.validate(product)
 }
 
 const validateQuery = (query) => {
@@ -140,7 +151,7 @@ const validateQuery = (query) => {
     query_state: Joi.string().min(3).max(255).required(),
   })
 
-  return querySchema.validate(query);
+  return querySchema.validate(query)
 }
 
 const validateVendor = (vendor) => {
@@ -151,7 +162,7 @@ const validateVendor = (vendor) => {
     vendor_product_name: Joi.string().min(3).max(255).required(),
   })
 
-  return vendorSchema.validate(vendor);
+  return vendorSchema.validate(vendor)
 }
 
 const validatePurchaseOrder = (purchaseOrder) => {
@@ -162,29 +173,29 @@ const validatePurchaseOrder = (purchaseOrder) => {
     payment_status: Joi.string().min(1).max(100).required(),
   })
 
-  return purchaseOrderSchema.validate(purchaseOrder);
+  return purchaseOrderSchema.validate(purchaseOrder)
 }
 
 const validateDate = (date) => {
   // return Joi.attempt(date, Joi.date().format('YYYY-MM-DD'));
-  return Joi.date().format('YYYY-MM-DD').required().validate(date);
+  return Joi.date().format('YYYY-MM-DD').required().validate(date)
 }
 
 const validateFollowupText = (followup) => {
   const schema = Joi.object({
     followup_id: Joi.number().required(),
-    followup_text: Joi.string().min(1).max(255).required()
+    followup_text: Joi.string().min(1).max(255).required(),
   })
-  return schema.validate(followup);
+  return schema.validate(followup)
 }
 
 const validateLogin = (login) => {
   const schema = Joi.object({
     email: Joi.string().email().min(3).max(320).required(),
-    password: Joi.string().min(8).max(15).required()
+    password: Joi.string().min(8).max(15).required(),
   })
 
-  return schema.validate(login);
+  return schema.validate(login)
 }
 
 // (() => {
@@ -227,5 +238,5 @@ module.exports = {
   validateVendor,
   validateDate,
   validateFollowupText,
-  validateLogin
+  validateLogin,
 }

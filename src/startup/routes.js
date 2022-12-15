@@ -1,39 +1,46 @@
-const bodyParser = require("body-parser");
-const cors = require('cors');
-const { employee, client, query, auth, followup, quotation } = require('../routes/')
-const { expressSession, sequelizeSessionStore } = require('./db');
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const {
+  employee,
+  client,
+  query,
+  auth,
+  followup,
+  quotation,
+} = require('../routes/')
+const { expressSession, sequelizeSessionStore } = require('./db')
 // const expressSession = require('express-session');
-require('dotenv').config();
+require('dotenv').config()
 const corsOptions = {
   origin: '*',
-  credentials: true,            //access-control-allow-credentials:true
+  credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 }
 
 module.exports = (app) => {
-  app.use(cors(corsOptions));
+  app.use(cors(corsOptions))
   app.use(bodyParser.json())
-  app.use(expressSession({
-    name: "darshanSession",
-    store: sequelizeSessionStore,
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-    },
-  }))
-  app.use('/api/employee', employee);
-  app.use('/api/client', client);
-  app.use('/api/query', query);
-  app.use('/api/auth', auth);
-  app.use('/api/followup', followup);
-  app.use('/api/quotation', quotation);
+  app.use(
+    expressSession({
+      name: 'darshanSession',
+      store: sequelizeSessionStore,
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      },
+    })
+  )
+  app.use('/api/employee', employee)
+  app.use('/api/client', client)
+  app.use('/api/query', query)
+  app.use('/api/auth', auth)
+  app.use('/api/followup', followup)
+  app.use('/api/quotation', quotation)
 }
-
-
 
 /*
 done

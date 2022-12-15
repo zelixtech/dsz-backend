@@ -1,6 +1,6 @@
-const { db } = require('../startup/db');
+const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateClient } = require('../utils/validate');
+const { validateClient } = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
@@ -14,14 +14,14 @@ const createClient = async (req, res) => {
       client_industry: req.body.data.client_industry,
       client_blocked: req.body.data.client_blocked,
     }
-    const { error } = validateClient(payload);
+    const { error } = validateClient(payload)
     if (error) {
       // return { validationError: true }
-      console.log(error);
+      console.log(error)
 
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
@@ -30,32 +30,31 @@ const createClient = async (req, res) => {
         [Op.or]: [
           { client_email: payload.client_email },
           { client_mobile: payload.client_mobile },
-        ]
-      }
+        ],
+      },
     })
     if (clientExists) {
       // return { clientAlreadyExists: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Client Already Exists",
+        errorMessage: 'Client Already Exists',
         error: true,
       })
     }
 
     const newClient = db.client.build(payload)
-    await newClient.save();
+    await newClient.save()
     console.log(newClient)
     return res.json({
       error: false,
-      data: newClient
+      data: newClient,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -63,43 +62,40 @@ const createClient = async (req, res) => {
 
 const retrieveClient = async (req, res) => {
   try {
-    const client_id = parseInt(req.params.client_id);
+    const client_id = parseInt(req.params.client_id)
     if (isNaN(client_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id);
+    let result = await db.client.findByPk(client_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Client Do Not Exists",
+        errorMessage: 'Client Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { client: result }
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
 }
-
 
 const updateClient = async (req, res) => {
   try {
@@ -112,27 +108,26 @@ const updateClient = async (req, res) => {
       client_industry: req.body.data.client_industry,
       client_blocked: req.body.data.client_blocked,
     }
-    const { value, error } = validateClient(payload);
+    const { value, error } = validateClient(payload)
 
-    const client_id = parseInt(req.params.client_id);
+    const client_id = parseInt(req.params.client_id)
     if (error || isNaN(client_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id);
+    let result = await db.client.findByPk(client_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Client Do Not Exists",
+        errorMessage: 'Client Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       await result.update({
         client_email: payload.client_email,
         client_name: payload.client_name,
@@ -141,31 +136,29 @@ const updateClient = async (req, res) => {
         client_city: payload.client_city,
         client_industry: payload.client_industry,
         client_blocked: payload.client_blocked,
-      });
+      })
       //   if (result.client_email == payload.client_email)
       //     return res.json({
       //       error: false,
       //       data: result
       //     })
       res.json({
-        message: "hello",
+        message: 'hello',
         result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
-    if (err.name === "SequelizeUniqueConstraintError") {
+  } catch (err) {
+    console.log(err)
+    if (err.name === 'SequelizeUniqueConstraintError') {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
-    }
-    else {
+    } else {
       return res.json({
         errorType: 'Server Error',
-        errorMessage: "Internal Server Error",
+        errorMessage: 'Internal Server Error',
         error: true,
       })
     }
@@ -175,42 +168,40 @@ const updateClient = async (req, res) => {
 
 const blockClient = async (req, res) => {
   try {
-    const client_id = parseInt(req.params.client_id);
+    const client_id = parseInt(req.params.client_id)
 
     if (isNaN(client_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id);
+    let result = await db.client.findByPk(client_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Client Do Not Exists",
+        errorMessage: 'Client Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { client: result }
       await result.update({
-        client_blocked: true
+        client_blocked: true,
       })
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -218,42 +209,40 @@ const blockClient = async (req, res) => {
 
 const unblockClient = async (req, res) => {
   try {
-    const client_id = parseInt(req.params.client_id);
+    const client_id = parseInt(req.params.client_id)
 
     if (isNaN(client_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id);
+    let result = await db.client.findByPk(client_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Client Do Not Exists",
+        errorMessage: 'Client Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { client: result }
       await result.update({
-        client_blocked: false
+        client_blocked: false,
       })
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -261,18 +250,17 @@ const unblockClient = async (req, res) => {
 
 const retrieveAllClients = async (req, res) => {
   try {
-    let result = await db.client.findAll();
+    let result = await db.client.findAll()
     return res.json({
       error: false,
-      data: result
+      data: result,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -282,6 +270,11 @@ const retrieveAllClients = async (req, res) => {
 //   retrieveClient({ client_id: 1 })
 // })()
 
-
-
-module.exports = { createClient, retrieveClient, retrieveAllClients, updateClient, blockClient, unblockClient }
+module.exports = {
+  createClient,
+  retrieveClient,
+  retrieveAllClients,
+  updateClient,
+  blockClient,
+  unblockClient,
+}

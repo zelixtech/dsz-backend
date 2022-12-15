@@ -1,7 +1,7 @@
-const { db } = require('../startup/db');
+const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateEmployee, validateDate } = require('../utils/validate');
-const saltRounds = 10;
+const { validateEmployee, validateDate } = require('../utils/validate')
+const saltRounds = 10
 const bcrypt = require('bcrypt')
 
 const createEmployee = async (req, res) => {
@@ -19,15 +19,15 @@ const createEmployee = async (req, res) => {
       employee_department: req.body.data.employee_department,
       employee_isAdmin: req.body.data.employee_isAdmin || false,
       employee_isHR: req.body.data.employee_isHR || false,
-      employee_password: req.body.data.employee_password
+      employee_password: req.body.data.employee_password,
     }
-    const { value, error } = validateEmployee(payload);
+    const { value, error } = validateEmployee(payload)
     if (error) {
       // return { validationError: true }
-      console.log(error);
+      console.log(error)
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
@@ -37,34 +37,33 @@ const createEmployee = async (req, res) => {
           { employee_email: payload.employee_email },
           { employee_mobile: payload.employee_mobile },
           { employee_office_email: payload.employee_office_email },
-        ]
-      }
+        ],
+      },
     })
     if (employeeExists) {
       // return { userAlreadyExists: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Aldready Exists",
+        errorMessage: 'Employee Aldready Exists',
         error: true,
       })
     }
     const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
-    payload.employee_password = hash;
+    payload.employee_password = hash
     const newEmployee = db.employee.build(payload)
-    await newEmployee.save();
+    await newEmployee.save()
     console.log(newEmployee)
     // return { newEmployee };
     return res.json({
       error: false,
-      data: newEmployee
+      data: newEmployee,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -72,43 +71,40 @@ const createEmployee = async (req, res) => {
 
 const retrieveEmployee = async (req, res) => {
   try {
-    const employee_id = parseInt(req.params.employee_id);
+    const employee_id = parseInt(req.params.employee_id)
     if (isNaN(employee_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.employee.findByPk(employee_id);
+    let result = await db.employee.findByPk(employee_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { employeeNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Do Not Exists",
+        errorMessage: 'Employee Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { employee: result }
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
 }
-
 
 const updateEmployee = async (req, res) => {
   try {
@@ -125,27 +121,26 @@ const updateEmployee = async (req, res) => {
       employee_department: req.body.data.employee_department,
       employee_isAdmin: req.body.data.employee_isAdmin || false,
     }
-    const { value, error } = validateEmployee(payload);
+    const { value, error } = validateEmployee(payload)
 
-    const employee_id = parseInt(req.params.employee_id);
+    const employee_id = parseInt(req.params.employee_id)
     if (error || isNaN(employee_id)) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.employee.findByPk(employee_id);
+    let result = await db.employee.findByPk(employee_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { employeeNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Do Not Exists",
+        errorMessage: 'Employee Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       await result.update({
         employee_name: payload.employee_name,
         employee_designation: payload.employee_designation,
@@ -157,31 +152,29 @@ const updateEmployee = async (req, res) => {
         employee_address: payload.employee_address,
         employee_relieve_date: payload.employee_relieve_date,
         employee_department: payload.employee_department,
-      });
+      })
       //   if (result.employee_email == payload.employee_email)
       //     return res.json({
       //       error: false,
       //       data: result
       //     })
       res.json({
-        message: "hello",
+        message: 'hello',
         result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
-    if (err.name === "SequelizeUniqueConstraintError") {
+  } catch (err) {
+    console.log(err)
+    if (err.name === 'SequelizeUniqueConstraintError') {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
-    }
-    else {
+    } else {
       return res.json({
         errorType: 'Server Error',
-        errorMessage: "Internal Server Error",
+        errorMessage: 'Internal Server Error',
         error: true,
       })
     }
@@ -191,46 +184,44 @@ const updateEmployee = async (req, res) => {
 
 const deleteEmployee = async (req, res) => {
   try {
-    const employee_id = parseInt(req.params.employee_id);
+    const employee_id = parseInt(req.params.employee_id)
     const payload = {
-      employee_relieve_date: req.body.data.employee_relieve_date
+      employee_relieve_date: req.body.data.employee_relieve_date,
     }
-    const { error } = validateDate(payload.employee_relieve_date);
+    const { error } = validateDate(payload.employee_relieve_date)
 
     if (isNaN(employee_id) || error) {
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Validation Error",
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.employee.findByPk(employee_id);
+    let result = await db.employee.findByPk(employee_id)
     if (result === null) {
-      console.log("not found");
+      console.log('not found')
       // return { employeeNotFound: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: "Employee Do Not Exists",
+        errorMessage: 'Employee Do Not Exists',
         error: true,
       })
-    }
-    else {
+    } else {
       // return { employee: result }
       result.update({
-        employee_relieve_date: payload.employee_relieve_date
+        employee_relieve_date: payload.employee_relieve_date,
       })
       return res.json({
         error: false,
-        data: result
+        data: result,
       })
     }
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -238,18 +229,17 @@ const deleteEmployee = async (req, res) => {
 
 const retrieveAllEmployees = async (req, res) => {
   try {
-    let result = await db.employee.findAll();
+    let result = await db.employee.findAll()
     return res.json({
       error: false,
-      data: result
+      data: result,
     })
-  }
-  catch (err) {
-    console.log(err);
+  } catch (err) {
+    console.log(err)
     // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
-      errorMessage: "Internal Server Error",
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -259,6 +249,10 @@ const retrieveAllEmployees = async (req, res) => {
 //   retrieveEmployee({ employee_id: 1 })
 // })()
 
-
-
-module.exports = { createEmployee, retrieveEmployee, updateEmployee, deleteEmployee, retrieveAllEmployees }
+module.exports = {
+  createEmployee,
+  retrieveEmployee,
+  updateEmployee,
+  deleteEmployee,
+  retrieveAllEmployees,
+}
