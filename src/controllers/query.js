@@ -1,6 +1,5 @@
 const { db } = require('../startup/db')
 const { validateQuery } = require('../utils/validate')
-const { client } = require('../models/client')
 
 const createQuery = async (req, res) => {
   try {
@@ -25,13 +24,7 @@ const createQuery = async (req, res) => {
     const { error } = validateQuery(payload)
     if (error) {
       // return { validationError: true }
-      console.log(error)
-
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw error
     }
 
     const newQuery = db.query.build(payload)
@@ -42,8 +35,23 @@ const createQuery = async (req, res) => {
       data: newQuery,
     })
   } catch (err) {
-    console.log(err)
+    console.log({ err })
+    // console.log(err.name)
     // console.log('fdfs')
+    if (err.name == 'ValidationError') {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Client Do not Exists',
+        error: true,
+      })
+    }
     return res.json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
