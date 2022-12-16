@@ -5,6 +5,7 @@ const router = express.Router()
 const { employeeController, bankInfoController } = require('../controllers/')
 
 router.get('/all', employeeController.retrieveAllEmployees)
+router.get('/check', employeeController.checkEmpExists)
 router.get('/:employee_id', employeeController.retrieveEmployee)
 router.post('/', employeeController.createEmployee)
 router.patch('/:employee_id', employeeController.updateEmployee)

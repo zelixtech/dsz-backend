@@ -1,6 +1,10 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateEmployee, validateDate } = require('../utils/validate')
+const {
+  validateEmployee,
+  validateDate,
+  validateEmpExists,
+} = require('../utils/validate')
 const saltRounds = 10
 const bcrypt = require('bcrypt')
 
@@ -44,7 +48,7 @@ const createEmployee = async (req, res) => {
       // return { userAlreadyExists: true };
       return res.json({
         errorType: 'Bad Request',
-        errorMessage: 'Employee Aldready Exists',
+        errorMessage: 'Employee Already Exists',
         error: true,
       })
     }
@@ -245,6 +249,56 @@ const retrieveAllEmployees = async (req, res) => {
   }
 }
 
+const checkEmpExists = async (req, res) => {
+  try {
+    let payload = {
+      employee_email: req.query.employee_email,
+      employee_office_email: req.query.employee_email,
+      employee_mobile: req.query.employee_mobile,
+    }
+
+    const { value, error } = validateEmpExists(payload)
+    if (error) {
+      // return { validationError: true }
+      console.log(error)
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+    var employeeExists = await db.employee.findOne({
+      where: {
+        [Op.or]: [
+          { employee_email: payload.employee_email },
+          { employee_mobile: payload.employee_mobile },
+          { employee_office_email: payload.employee_office_email },
+        ],
+      },
+    })
+    if (employeeExists) {
+      // return { userAlreadyExists: true };
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Employee Already Exists',
+        error: true,
+      })
+    }
+    return res.json({
+      error: false,
+      message: 'Ok',
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 // (async () => {
 //   retrieveEmployee({ employee_id: 1 })
 // })()
@@ -255,4 +309,5 @@ module.exports = {
   updateEmployee,
   deleteEmployee,
   retrieveAllEmployees,
+  checkEmpExists,
 }
