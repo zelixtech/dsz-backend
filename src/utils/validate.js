@@ -179,6 +179,15 @@ const validateQuery = (query) => {
   return querySchema.validate(query)
 }
 
+const validateQueryStatus = (query) => {
+  const querySchema = Joi.object({
+    query_id: Joi.number().required(),
+    query_state: Joi.string().min(3).max(255).required(),
+  })
+
+  return querySchema.validate(query)
+}
+
 const validateVendor = (vendor) => {
   const vendorSchema = Joi.object({
     purchase_order_id: Joi.number().required(),
@@ -266,4 +275,5 @@ module.exports = {
   validateDate,
   validateFollowupText,
   validateLogin,
+  validateQueryStatus,
 }
