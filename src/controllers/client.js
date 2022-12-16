@@ -1,6 +1,6 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateClient } = require('../utils/validate')
+const { validateClient, validateClientExists } = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
@@ -266,9 +266,53 @@ const retrieveAllClients = async (req, res) => {
   }
 }
 
-// (async () => {
-//   retrieveClient({ client_id: 1 })
-// })()
+const checkClientExists = async (req, res) => {
+  try {
+    const payload = {
+      client_email: req.query.client_email,
+      client_mobile: req.query.client_mobile,
+    }
+
+    const { error } = validateClientExists(payload)
+    if (error) {
+      throw error
+    }
+
+    const clientExists = await db.client.findOne({
+      where: {
+        [Op.or]: [
+          { client_email: payload.client_email },
+          { client_mobile: payload.client_mobile },
+        ],
+      },
+    })
+    if (clientExists) {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Client Already Exists',
+        error: true,
+      })
+    }
+    return res.json({
+      error: false,
+      message: 'ok',
+    })
+  } catch (err) {
+    console.log({ err })
+    if (err.name == 'ValidationError') {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
 
 module.exports = {
   createClient,
@@ -277,4 +321,5 @@ module.exports = {
   updateClient,
   blockClient,
   unblockClient,
+  checkClientExists,
 }

@@ -41,6 +41,18 @@ const validateEmpExists = (employee) => {
   return employeeSchema.validate(employee)
 }
 
+const validateClientExists = (client) => {
+  const clientSchema = Joi.object({
+    client_mobile: Joi.string()
+      .length(10)
+      .pattern(/^[0-9]+$/)
+      .required(),
+    client_email: Joi.string().email().min(3).max(320).required(),
+  })
+
+  return clientSchema.validate(client)
+}
+
 const validateClient = (client) => {
   const clientSchema = Joi.object({
     client_email: Joi.string().email().min(3).max(320).required(),
@@ -243,6 +255,7 @@ module.exports = {
   validateEmployeeLogin,
   validateEmployee,
   validateEmpExists,
+  validateClientExists,
   validateFollowup,
   validateOrder,
   validateProduct,

@@ -5,6 +5,7 @@ const router = express.Router()
 const { clientController } = require('../controllers/')
 
 router.get('/all', clientController.retrieveAllClients)
+router.get('/check', clientController.checkClientExists)
 router.get('/:client_id', clientController.retrieveClient)
 router.post('/', clientController.createClient)
 router.patch('/:client_id', clientController.updateClient)
