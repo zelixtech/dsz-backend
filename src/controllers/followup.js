@@ -30,6 +30,13 @@ const createFollowup = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return res.json({
+        error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Query does not exists',
+      })
+    }
     return res.json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
@@ -45,6 +52,18 @@ const getFollowupsForQuery = async (req, res) => {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+    const getQuery = await db.query.findOne({
+      where: {
+        query_id: query_id,
+      },
+    })
+    if (!getQuery) {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Query doesnot exists',
         error: true,
       })
     }
@@ -83,7 +102,13 @@ const updateFollowup = async (req, res) => {
       })
     }
     const result = await db.followup.findByPk(payload.followup_id)
-
+    if (!result) {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Followup does not exists',
+        error: true,
+      })
+    }
     await result.update({
       followup_text: payload.followup_text,
     })
