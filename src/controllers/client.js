@@ -1,10 +1,6 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const {
-  validateClient,
-  validateClientExists,
-  validateClientBlocked,
-} = require('../utils/validate')
+const { validateClient, validateClientExists } = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
@@ -112,7 +108,7 @@ const updateClient = async (req, res) => {
       client_industry: req.body.data.client_industry,
       client_blocked: req.body.data.client_blocked,
     }
-    const { value, error } = validateClient(payload)
+    const { error } = validateClient(payload)
 
     const client_id = parseInt(req.params.client_id)
     if (error || isNaN(client_id)) {
