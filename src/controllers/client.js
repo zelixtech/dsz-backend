@@ -1,6 +1,10 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateClient, validateClientExists } = require('../utils/validate')
+const {
+  validateClient,
+  validateClientExists,
+  validateClientBlocked,
+} = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
@@ -248,9 +252,35 @@ const unblockClient = async (req, res) => {
   }
 }
 
-const retrieveAllClients = async (req, res) => {
+const retrieveAllActiveClients = async (req, res) => {
   try {
-    let result = await db.client.findAll()
+    let result = await db.client.findAll({
+      where: {
+        client_blocked: 0,
+      },
+    })
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const retrieveAllBlockedClients = async (req, res) => {
+  try {
+    let result = await db.client.findAll({
+      where: {
+        client_blocked: 1,
+      },
+    })
     return res.json({
       error: false,
       data: result,
@@ -317,7 +347,8 @@ const checkClientExists = async (req, res) => {
 module.exports = {
   createClient,
   retrieveClient,
-  retrieveAllClients,
+  retrieveAllActiveClients,
+  retrieveAllBlockedClients,
   updateClient,
   blockClient,
   unblockClient,
