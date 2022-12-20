@@ -4,3 +4,5 @@ temp
 .env.prod
 awsEc2InstanceCreation.md
 src/startup/access.log
+.env.local
+.env.web

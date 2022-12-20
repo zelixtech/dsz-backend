@@ -40,7 +40,6 @@ const createEmployee = async (req, res) => {
         [Op.or]: [
           { employee_email: payload.employee_email },
           { employee_mobile: payload.employee_mobile },
-          { employee_office_email: payload.employee_office_email },
         ],
       },
     })

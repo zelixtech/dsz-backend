@@ -29,7 +29,6 @@ module.exports = function (sequelize, DataTypes) {
       employee_office_email: {
         type: DataTypes.STRING(320),
         allowNull: false,
-        unique: 'employee_office_email_UNIQUE',
       },
       employee_email: {
         type: DataTypes.STRING(320),
@@ -87,12 +86,6 @@ module.exports = function (sequelize, DataTypes) {
           unique: true,
           using: 'BTREE',
           fields: [{ name: 'employee_email' }],
-        },
-        {
-          name: 'employee_office_email_UNIQUE',
-          unique: true,
-          using: 'BTREE',
-          fields: [{ name: 'employee_office_email' }],
         },
         {
           name: 'employee_id_UNIQUE',
