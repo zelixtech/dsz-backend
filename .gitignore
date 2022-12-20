@@ -3,3 +3,4 @@ node_modules/
 temp
 .env.prod
 awsEc2InstanceCreation.md
+src/startup/access.log

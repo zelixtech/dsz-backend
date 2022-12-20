@@ -1,5 +1,9 @@
 const { db } = require('../startup/db')
-const { validateQuery, validateQueryStatus } = require('../utils/validate')
+const {
+  validateQuery,
+  validateQueryStatus,
+  validateEmpQueryWithStatus,
+} = require('../utils/validate')
 
 const createQuery = async (req, res) => {
   try {
@@ -70,7 +74,14 @@ const getQuery = async (req, res) => {
         error: true,
       })
     }
-    let result = await db.query.findByPk(query_id)
+    let result = await db.query.findByPk(query_id, {
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+        },
+      ],
+    })
     if (result === null) {
       console.log('not found')
       return res.json({
@@ -224,7 +235,14 @@ const updateQueryStatus = async (req, res) => {
 
 const getAllQueries = async (req, res) => {
   try {
-    let result = await db.query.findAll()
+    let result = await db.query.findAll({
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+        },
+      ],
+    })
     return res.json({
       error: false,
       data: result,
@@ -242,7 +260,13 @@ const getAllQueries = async (req, res) => {
 
 const getAllQueriesAssignedToEmployee = async (req, res) => {
   try {
-    if (isNaN(req.params.employee_id)) {
+    const payload = {
+      query_state: req.query.query_state,
+      employee_id: req.query.employee_id,
+    }
+    const { error } = validateEmpQueryWithStatus(payload)
+
+    if (error) {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
@@ -251,8 +275,14 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     }
     let result = await db.query.findAll({
       where: {
-        employee_id: req.params.employee_id,
+        employee_id: req.query.employee_id,
       },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+        },
+      ],
     })
     return res.json({
       error: false,
@@ -269,7 +299,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
   }
 }
 
-const getAllQueriesAssignedToClient = async (req, res) => {
+const getAllQueriesOfAClient = async (req, res) => {
   try {
     if (isNaN(req.params.client_id)) {
       return res.json({
@@ -278,14 +308,22 @@ const getAllQueriesAssignedToClient = async (req, res) => {
         error: true,
       })
     }
-    let result = await db.query.findAll({
-      where: {
-        client_id: req.params.client_id,
-      },
-    })
+    console.log('hfd')
+    let client = await db.client.findByPk(req.params.client_id)
+    if (!client) {
+      return res.json({
+        errorType: 'Bad Request',
+        errorMessage: 'Client Do Not Exists',
+        error: true,
+      })
+    }
+    let result = await db.query.findAll()
     return res.json({
       error: false,
-      data: result,
+      data: {
+        client: client,
+        queries: result,
+      },
     })
   } catch (err) {
     console.log(err)
@@ -304,6 +342,12 @@ const getAllUnassignedQueries = async (req, res) => {
       where: {
         employee_id: null,
       },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+        },
+      ],
     })
     console.log(result)
     return res.json({
@@ -396,7 +440,7 @@ module.exports = {
   getAllQueriesAssignedToEmployee,
   getAllUnassignedQueries,
   assignQueryToEmployee,
-  getAllQueriesAssignedToClient,
+  getAllQueriesOfAClient,
   getThings,
   updateQueryStatus,
 }

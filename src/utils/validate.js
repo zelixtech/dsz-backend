@@ -232,6 +232,15 @@ const validateLogin = (login) => {
   return schema.validate(login)
 }
 
+const validateEmpQueryWithStatus = (query) => {
+  const schema = Joi.object({
+    query_state: Joi.string().min(3).max(10).required(),
+    employee_id: Joi.number().required(),
+  })
+
+  return schema.validate(query)
+}
+
 // (() => {
 //   try {
 //     console.log(validateDate('1999-12-20'));
@@ -276,4 +285,5 @@ module.exports = {
   validateFollowupText,
   validateLogin,
   validateQueryStatus,
+  validateEmpQueryWithStatus,
 }

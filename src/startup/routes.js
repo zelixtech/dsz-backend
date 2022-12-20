@@ -16,9 +16,16 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 }
+var morgan = require('morgan')
+var fs = require('fs')
+var path = require('path')
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
+  flags: 'a',
+})
 
 module.exports = (app) => {
   app.use(cors(corsOptions))
+  app.use(morgan('combined', { stream: accessLogStream }))
   app.use(bodyParser.json())
   app.use(
     expressSession({
