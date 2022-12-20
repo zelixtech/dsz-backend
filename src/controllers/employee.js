@@ -252,11 +252,16 @@ const checkEmpExists = async (req, res) => {
   try {
     let payload = {
       employee_email: req.query.employee_email,
-      employee_office_email: req.query.employee_email,
       employee_mobile: req.query.employee_mobile,
     }
+    if (payload.employee_email === undefined) {
+      delete payload['employee_email']
+    }
+    if (payload.employee_mobile === undefined) {
+      delete payload['employee_mobile']
+    }
 
-    const { value, error } = validateEmpExists(payload)
+    const { error } = validateEmpExists(payload)
     if (error) {
       // return { validationError: true }
       console.log(error)
@@ -267,13 +272,7 @@ const checkEmpExists = async (req, res) => {
       })
     }
     var employeeExists = await db.employee.findOne({
-      where: {
-        [Op.or]: [
-          { employee_email: payload.employee_email },
-          { employee_mobile: payload.employee_mobile },
-          { employee_office_email: payload.employee_office_email },
-        ],
-      },
+      where: payload,
     })
     if (employeeExists) {
       // return { userAlreadyExists: true };
@@ -285,7 +284,7 @@ const checkEmpExists = async (req, res) => {
     }
     return res.json({
       error: false,
-      message: 'Ok',
+      message: 'Employee does not Exists',
     })
   } catch (err) {
     console.log(err)

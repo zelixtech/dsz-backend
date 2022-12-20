@@ -32,14 +32,18 @@ const validateEmpExists = (employee) => {
   const employeeSchema = Joi.object({
     employee_mobile: Joi.string()
       .length(10)
-      .pattern(/^[0-9]+$/)
-      .required(),
-    employee_office_email: Joi.string().email().min(3).max(320).required(),
-    employee_email: Joi.string().email().min(3).max(320).required(),
-  })
+      .pattern(/^[0-9]+$/),
+    employee_email: Joi.string().email().min(3).max(320),
+  }).or('employee_mobile', 'employee_email')
 
   return employeeSchema.validate(employee)
 }
+
+// const { value, error } = validateEmpExists({
+//   // employee_email: 'imj@gmial.com',
+//   employee_mobile: '7487937891',
+// })
+// console.log({ value, error })
 
 const validateClientExists = (client) => {
   const clientSchema = Joi.object({
