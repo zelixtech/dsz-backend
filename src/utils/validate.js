@@ -49,10 +49,9 @@ const validateClientExists = (client) => {
   const clientSchema = Joi.object({
     client_mobile: Joi.string()
       .length(10)
-      .pattern(/^[0-9]+$/)
-      .required(),
-    client_email: Joi.string().email().min(3).max(320).required(),
-  })
+      .pattern(/^[0-9]+$/),
+    client_email: Joi.string().email().min(3).max(320),
+  }).or('client_mobile', 'client_email')
 
   return clientSchema.validate(client)
 }

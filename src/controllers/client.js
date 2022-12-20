@@ -298,6 +298,12 @@ const checkClientExists = async (req, res) => {
       client_email: req.query.client_email,
       client_mobile: req.query.client_mobile,
     }
+    if (payload.client_email === undefined) {
+      delete payload['client_email']
+    }
+    if (payload.client_mobile === undefined) {
+      delete payload['client_mobile']
+    }
 
     const { error } = validateClientExists(payload)
     if (error) {
@@ -305,12 +311,7 @@ const checkClientExists = async (req, res) => {
     }
 
     const clientExists = await db.client.findOne({
-      where: {
-        [Op.or]: [
-          { client_email: payload.client_email },
-          { client_mobile: payload.client_mobile },
-        ],
-      },
+      where: payload,
     })
     if (clientExists) {
       return res.json({
@@ -321,7 +322,7 @@ const checkClientExists = async (req, res) => {
     }
     return res.json({
       error: false,
-      message: 'ok',
+      message: 'Client does not exists',
     })
   } catch (err) {
     console.log({ err })
