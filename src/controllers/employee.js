@@ -25,7 +25,7 @@ const createEmployee = async (req, res) => {
       employee_isHR: req.body.data.employee_isHR || false,
       employee_password: req.body.data.employee_password,
     }
-    const { value, error } = validateEmployee(payload)
+    const { error } = validateEmployee(payload)
     if (error) {
       // return { validationError: true }
       console.log(error)
@@ -123,8 +123,10 @@ const updateEmployee = async (req, res) => {
       employee_relieve_date: req.body.data.employee_relieve_date,
       employee_department: req.body.data.employee_department,
       employee_isAdmin: req.body.data.employee_isAdmin || false,
+      employee_isHR: req.body.data.employee_isHR || false,
+      employee_password: req.body.data.employee_password,
     }
-    const { value, error } = validateEmployee(payload)
+    const { error } = validateEmployee(payload)
 
     const employee_id = parseInt(req.params.employee_id)
     if (error || isNaN(employee_id)) {
@@ -144,6 +146,8 @@ const updateEmployee = async (req, res) => {
         error: true,
       })
     } else {
+      const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
+      payload.employee_password = hash
       await result.update({
         employee_name: payload.employee_name,
         employee_designation: payload.employee_designation,
@@ -155,12 +159,10 @@ const updateEmployee = async (req, res) => {
         employee_address: payload.employee_address,
         employee_relieve_date: payload.employee_relieve_date,
         employee_department: payload.employee_department,
+        employee_password: payload.employee_password,
+        employee_isAdmin: payload.employee_isAdmin,
+        employee_isHR: payload.employee_isHR,
       })
-      //   if (result.employee_email == payload.employee_email)
-      //     return res.json({
-      //       error: false,
-      //       data: result
-      //     })
       res.json({
         message: 'hello',
         result,
@@ -181,7 +183,6 @@ const updateEmployee = async (req, res) => {
         error: true,
       })
     }
-    // return { dbError: true };
   }
 }
 
