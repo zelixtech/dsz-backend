@@ -309,7 +309,6 @@ const getAllQueriesOfAClient = async (req, res) => {
         error: true,
       })
     }
-    console.log('hfd')
     let client = await db.client.findByPk(req.params.client_id)
     if (!client) {
       return res.json({
@@ -318,7 +317,11 @@ const getAllQueriesOfAClient = async (req, res) => {
         error: true,
       })
     }
-    let result = await db.query.findAll()
+    let result = await db.query.findAll({
+      where: {
+        client_id: req.params.client_id,
+      },
+    })
     return res.json({
       error: false,
       data: {
