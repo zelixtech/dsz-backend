@@ -33,7 +33,7 @@ const createQuery = async (req, res) => {
 
     const newQuery = db.query.build(payload)
     await newQuery.save()
-    console.log(newQuery)
+    // console.log(newQuery)
     return res.json({
       error: false,
       data: newQuery,
@@ -83,7 +83,7 @@ const getQuery = async (req, res) => {
       ],
     })
     if (result === null) {
-      console.log('not found')
+      // console.log('not found')
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Query Do Not Exists',
@@ -136,7 +136,7 @@ const updateQuery = async (req, res) => {
     }
     let result = await db.query.findByPk(query_id)
     if (result === null) {
-      console.log('not found')
+      // console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
@@ -197,7 +197,7 @@ const updateQueryStatus = async (req, res) => {
     }
     let result = await db.query.findByPk(query_id)
     if (result === null) {
-      console.log('not found')
+      // console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
@@ -387,7 +387,7 @@ const getAllUnassignedQueriesActive = async (req, res) => {
         },
       ],
     })
-    console.log(result)
+    // console.log(result)
     return res.json({
       error: false,
       data: result,
@@ -419,7 +419,7 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
         },
       ],
     })
-    console.log(result)
+    // console.log(result)
     return res.json({
       error: false,
       data: result,
@@ -452,7 +452,7 @@ const assignQueryToEmployee = async (req, res) => {
 
     const result = await db.query.findByPk(payload.query_id)
     if (result === null) {
-      console.log('not found')
+      // console.log('not found')
       // return { clientNotFound: true };
       return res.json({
         errorType: 'Bad Request',
@@ -498,7 +498,7 @@ const getThings = async (req, res) => {
       },
     ],
   })
-  console.log(results)
+  // console.log(results)
   res.json({ results })
 }
 

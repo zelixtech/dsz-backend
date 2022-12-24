@@ -17,4 +17,6 @@ router.put(
   loginController.updateAttendanceOfAEmployee
 )
 
+router.post('/attendance/leave', loginController.askHrForLeave)
+
 module.exports = router

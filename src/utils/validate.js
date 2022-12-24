@@ -59,14 +59,14 @@ const validateClientExists = (client) => {
 const validateClient = (client) => {
   const clientSchema = Joi.object({
     client_email: Joi.string().email().min(3).max(320).required(),
-    client_name: Joi.string().min(3).max(255).required(),
+    client_name: Joi.string().max(255),
     client_mobile: Joi.string()
-      .length(10)
+      .length(255)
       .pattern(/^[0-9]+$/)
       .required(),
-    client_address: Joi.string().min(3).max(255).required(),
-    client_city: Joi.string().min(1).max(255).required(),
-    client_industry: Joi.string().min(1).max(255).required(),
+    client_address: Joi.string().max(255),
+    client_city: Joi.string().max(255),
+    client_industry: Joi.string().max(255),
     client_blocked: Joi.boolean(),
   })
 
@@ -172,11 +172,11 @@ const validateQuery = (query) => {
     client_id: Joi.number().required(),
     employee_id: Joi.number(),
     query_source: Joi.string().min(3).max(255).required(),
-    query_create_time: Joi.date().required(),
-    query_subject: Joi.string().min(3).max(255).required(),
-    query_product: Joi.string().min(3).max(255).required(),
-    query_message: Joi.string().min(3).max(1024).required(),
-    query_state: Joi.string().min(3).max(255).required(),
+    query_create_time: Joi.date(),
+    query_subject: Joi.string().min(3).max(255),
+    query_product: Joi.string().min(3).max(255),
+    query_message: Joi.string().min(3).max(1024),
+    query_state: Joi.string().min(3).max(255),
   })
 
   return querySchema.validate(query)
