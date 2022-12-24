@@ -275,7 +275,8 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     }
     let result = await db.query.findAll({
       where: {
-        employee_id: req.query.employee_id,
+        employee_id: payload.employee_id,
+        query_state: payload.query_state,
       },
       include: [
         {
