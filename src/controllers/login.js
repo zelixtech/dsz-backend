@@ -294,9 +294,25 @@ const updateAttendanceOfAEmployee = async (req, res) => {
 
 // })()
 
+const askHrForLeave = async (req, res) => {
+  try {
+    const payload = {
+      startDate: req.body.data.startDate,
+      endDate: req.body.data.endDate,
+    }
+  } catch (err) {
+    console.log(err.name)
+    console.log(err)
+    res.json({
+      error: true,
+    })
+  }
+}
+
 module.exports = {
   login,
   getAttendanceOfEachEmployee,
   getAttendanceOfAEmployee,
   updateAttendanceOfAEmployee,
+  askHrForLeave,
 }
