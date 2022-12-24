@@ -233,13 +233,44 @@ const updateQueryStatus = async (req, res) => {
   }
 }
 
-const getAllQueries = async (req, res) => {
+const getAllQueriesOfActiveClients = async (req, res) => {
   try {
     let result = await db.query.findAll({
       include: [
         {
           model: db.client,
           as: 'client',
+          where: {
+            client_blocked: 0,
+          },
+        },
+      ],
+    })
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const getAllQueriesOfBlockedClients = async (req, res) => {
+  try {
+    let result = await db.query.findAll({
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 1,
+          },
         },
       ],
     })
@@ -340,7 +371,7 @@ const getAllQueriesOfAClient = async (req, res) => {
   }
 }
 
-const getAllUnassignedQueries = async (req, res) => {
+const getAllUnassignedQueriesActive = async (req, res) => {
   try {
     let result = await db.query.findAll({
       where: {
@@ -350,6 +381,41 @@ const getAllUnassignedQueries = async (req, res) => {
         {
           model: db.client,
           as: 'client',
+          where: {
+            client_blocked: 0,
+          },
+        },
+      ],
+    })
+    console.log(result)
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const getAllUnassignedQueriesBlocked = async (req, res) => {
+  try {
+    let result = await db.query.findAll({
+      where: {
+        employee_id: null,
+      },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 1,
+          },
         },
       ],
     })
@@ -440,9 +506,11 @@ module.exports = {
   createQuery,
   getQuery,
   updateQuery,
-  getAllQueries,
+  getAllQueriesOfActiveClients,
+  getAllQueriesOfBlockedClients,
   getAllQueriesAssignedToEmployee,
-  getAllUnassignedQueries,
+  getAllUnassignedQueriesActive,
+  getAllUnassignedQueriesBlocked,
   assignQueryToEmployee,
   getAllQueriesOfAClient,
   getThings,
