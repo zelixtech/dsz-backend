@@ -11,10 +11,10 @@ module.exports = function (sequelize, DataTypes) {
       },
       client_name: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
       },
       client_mobile: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.STRING(255),
         allowNull: false,
         unique: 'client_mobile_UNIQUE',
       },
@@ -25,19 +25,19 @@ module.exports = function (sequelize, DataTypes) {
       },
       client_address: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
       },
       client_city: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
       },
       client_industry: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
       },
       client_blocked: {
         type: DataTypes.TINYINT,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 0,
       },
     },
