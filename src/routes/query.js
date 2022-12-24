@@ -5,8 +5,16 @@ const router = express.Router()
 const { queryController } = require('../controllers/')
 
 router.get('/all/client/:client_id', queryController.getAllQueriesOfAClient)
-router.get('/all', queryController.getAllQueries)
-router.get('/all/unassigned', queryController.getAllUnassignedQueries)
+router.get('/all/active', queryController.getAllQueriesOfActiveClients)
+router.get('/all/blocked', queryController.getAllQueriesOfBlockedClients)
+router.get(
+  '/all/unassigned/active',
+  queryController.getAllUnassignedQueriesActive
+)
+router.get(
+  '/all/unassigned/blocked',
+  queryController.getAllUnassignedQueriesBlocked
+)
 router.get('/all/employee', queryController.getAllQueriesAssignedToEmployee)
 router.get('/:query_id', queryController.getQuery)
 router.post('/', queryController.createQuery)
