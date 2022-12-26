@@ -259,6 +259,18 @@ const validateTimeInterval = (interval) => {
   return schema.validate(interval)
 }
 
+const validateLeaveNotification = (notif) => {
+  const schema = Joi.object({
+    leave_req_start_date: Joi.date().format('YYYY-MM-DD').required(),
+    leave_req_end_date: Joi.date().format('YYYY-MM-DD').required(),
+    employee_id: Joi.number().required(),
+    leave_req_message: Joi.string().max(1024).required(),
+    leave_req_status: Joi.string().max(255).required(),
+  })
+
+  return schema.validate(notif)
+}
+
 // (() => {
 //   try {
 //     console.log(validateDate('1999-12-20'));
@@ -305,4 +317,5 @@ module.exports = {
   validateQueryStatus,
   validateEmpQueryWithStatus,
   validateTimeInterval,
+  validateLeaveNotification,
 }

@@ -3,7 +3,10 @@ const { db } = require('../startup/db')
 const { Op } = require('sequelize')
 const moment = require('moment')
 const bcrypt = require('bcrypt')
-const { validateLogin } = require('../utils/validate')
+const {
+  validateLogin,
+  validateLeaveNotification,
+} = require('../utils/validate')
 
 const login = async (req, res) => {
   try {
@@ -294,17 +297,124 @@ const updateAttendanceOfAEmployee = async (req, res) => {
 
 // })()
 
-const askHrForLeave = async (req, res) => {
+const leaveNotificationToHR = async (req, res) => {
   try {
     const payload = {
-      startDate: req.body.data.startDate,
-      endDate: req.body.data.endDate,
+      leave_req_start_date: req.body.data.leave_req_start_date,
+      leave_req_end_date: req.body.data.leave_req_end_date,
+      employee_id: req.body.data.employee_id,
+      leave_req_message: req.body.data.leave_req_message,
+      leave_req_status: 'new',
     }
+
+    const { error } = validateLeaveNotification(payload)
+    if (error) {
+      return res.json({
+        error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+      })
+    }
+
+    const notif = db.leave_req.build(payload)
+    await notif.save()
+
+    return res.json({
+      error: false,
+      data: notif,
+    })
   } catch (err) {
     console.log(err.name)
     console.log(err)
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return res.json({
+        error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Employee Do not Exists',
+      })
+    }
+
     res.json({
       error: true,
+      errorType: 'Internal Server Error',
+      errorMessage: 'Internal Server Error',
+    })
+  }
+}
+
+const getAllLeaveNotifications = async (req, res) => {
+  try {
+    const leaveRequests = await db.leave_req.findAll({
+      where: {
+        leave_req_status: 'new',
+      },
+      include: {
+        model: db.employee,
+        as: 'employee',
+      },
+    })
+    return res.json({
+      data: leaveRequests,
+      message: 'hello',
+    })
+  } catch (err) {
+    res.json({
+      error: true,
+      errorType: 'Internal Server Error',
+      errorMessage: 'Internal Server Error',
+    })
+  }
+}
+
+const getAllArchivedLeaveNotifications = async (req, res) => {
+  try {
+    const leaveRequests = await db.leave_req.findAll({
+      where: {
+        leave_req_status: 'archive',
+      },
+      include: {
+        model: db.employee,
+        as: 'employee',
+      },
+    })
+    return res.json({
+      data: leaveRequests,
+      message: 'hello',
+    })
+  } catch (err) {
+    res.json({
+      error: true,
+      errorType: 'Internal Server Error',
+      errorMessage: 'Internal Server Error',
+    })
+  }
+}
+
+const updateLeaveReqStatus = async (req, res) => {
+  try {
+    const { leave_req_id } = req.params
+    const leave = await db.leave_req.findByPk(leave_req_id)
+    if (!leave) {
+      return res.json({
+        error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Leave Request does not Exists',
+      })
+    }
+    leave.update({
+      leave_req_status: 'archive',
+    })
+
+    return res.json({
+      data: leave,
+      message: 'hello',
+    })
+  } catch (err) {
+    console.log(err)
+    res.json({
+      error: true,
+      errorType: 'Internal Server Error',
+      errorMessage: 'Internal Server Error',
     })
   }
 }
@@ -314,5 +424,8 @@ module.exports = {
   getAttendanceOfEachEmployee,
   getAttendanceOfAEmployee,
   updateAttendanceOfAEmployee,
-  askHrForLeave,
+  leaveNotificationToHR,
+  getAllLeaveNotifications,
+  updateLeaveReqStatus,
+  getAllArchivedLeaveNotifications,
 }

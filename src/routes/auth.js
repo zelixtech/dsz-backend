@@ -17,6 +17,15 @@ router.put(
   loginController.updateAttendanceOfAEmployee
 )
 
-router.post('/attendance/leave', loginController.askHrForLeave)
+router.post('/attendance/leave', loginController.leaveNotificationToHR)
+router.get('/attendance/all/leaves', loginController.getAllLeaveNotifications)
+router.get(
+  '/attendance/all/archived_leaves',
+  loginController.getAllArchivedLeaveNotifications
+)
+router.patch(
+  '/attendance/leave/:leave_req_id',
+  loginController.updateLeaveReqStatus
+)
 
 module.exports = router
