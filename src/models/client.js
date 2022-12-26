@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize')
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     'client',
@@ -23,7 +22,15 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         unique: 'client_email_UNIQUE',
       },
-      client_address: {
+      client_billing_address: {
+        type: DataTypes.STRING(1024),
+        allowNull: true,
+      },
+      client_shipping_address: {
+        type: DataTypes.STRING(1024),
+        allowNull: true,
+      },
+      client_gst_no: {
         type: DataTypes.STRING(255),
         allowNull: true,
       },
@@ -31,7 +38,15 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(255),
         allowNull: true,
       },
-      client_industry: {
+      client_state: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      client_country_iso: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      client_company_name: {
         type: DataTypes.STRING(255),
         allowNull: true,
       },
@@ -39,6 +54,14 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TINYINT,
         allowNull: true,
         defaultValue: 0,
+      },
+      client_alternate_mobile: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      client_alternate_email: {
+        type: DataTypes.STRING(1024),
+        allowNull: true,
       },
     },
     {

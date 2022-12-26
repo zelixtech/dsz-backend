@@ -64,10 +64,16 @@ const validateClient = (client) => {
       .length(255)
       .pattern(/^[0-9]+$/)
       .required(),
-    client_address: Joi.string().max(255),
+    client_shipping_address: Joi.string().max(1024),
+    client_billing_address: Joi.string().max(1024),
     client_city: Joi.string().max(255),
-    client_industry: Joi.string().max(255),
+    client_state: Joi.string().max(255),
+    client_country_iso: Joi.string().max(255),
+    client_company_name: Joi.string().max(255),
+    client_gst_no: Joi.string().max(255),
     client_blocked: Joi.boolean(),
+    client_alternate_email: Joi.string().max(1024),
+    client_alternate_mobile: Joi.string().max(255),
   })
 
   return clientSchema.validate(client)
