@@ -5,6 +5,7 @@ const {
   validateEmpQueryWithStatus,
 } = require('../utils/validate')
 const { Op } = require('sequelize')
+const moment = require('moment')
 
 const createQuery = async (req, res) => {
   try {
@@ -580,6 +581,93 @@ const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
   }
 }
 
+const getQueriesCreatedUnAssigned = async (req, res) => {
+  try {
+    let minLastUpdateMoment = moment()
+      .subtract(15, 'd')
+      .format('YYYY-MM-DD HH:MM:SS')
+    let result = await db.query.findAll({
+      where: {
+        query_create_time: {
+          [Op.lte]: minLastUpdateMoment,
+        },
+        employee_id: null,
+      },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 0,
+          },
+        },
+      ],
+    })
+
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const getQueriesRunningNoFollowup = async (req, res) => {
+  try {
+    let minLastUpdateMoment = moment().subtract(15, 'd')
+    let queries = await db.query.findAll({
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 0,
+          },
+        },
+        {
+          model: db.followup,
+          as: 'followups',
+          order: [['updatedAt', 'DESC']],
+          limit: 1,
+        },
+      ],
+    })
+    const result = []
+    queries.forEach((value) => {
+      if (value.dataValues.followups.length <= 0) {
+        result.push(value)
+      } else {
+        const queryLastUpdateMoment = moment(
+          value.dataValues.followups[0].updatedAt
+        )
+        if (queryLastUpdateMoment.isBefore(minLastUpdateMoment)) {
+          result.push(value)
+        }
+      }
+    })
+
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 module.exports = {
   createQuery,
   getQuery,
@@ -595,4 +683,6 @@ module.exports = {
   updateQueryStatus,
   retrieveAllQueriesInGivenTime,
   retrieveAllQueriesInGivenTimeBlocked,
+  getQueriesCreatedUnAssigned,
+  getQueriesRunningNoFollowup,
 }

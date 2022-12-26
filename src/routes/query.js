@@ -17,6 +17,14 @@ router.get(
   queryController.getAllUnassignedQueriesActive
 )
 router.get(
+  '/all/created_unassigned',
+  queryController.getQueriesCreatedUnAssigned
+)
+router.get(
+  '/all/running_no_followup',
+  queryController.getQueriesRunningNoFollowup
+)
+router.get(
   '/all/unassigned/blocked',
   queryController.getAllUnassignedQueriesBlocked
 )
