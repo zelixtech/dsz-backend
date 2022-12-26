@@ -9,10 +9,16 @@ const createClient = async (req, res) => {
       client_email: req.body.data.client_email,
       client_name: req.body.data.client_name,
       client_mobile: req.body.data.client_mobile,
-      client_address: req.body.data.client_address,
+      client_shipping_address: req.body.data.client_shipping_address,
+      client_billing_address: req.body.data.client_billing_address,
       client_city: req.body.data.client_city,
-      client_industry: req.body.data.client_industry,
+      client_state: req.body.data.client_state,
+      client_country_iso: req.body.data.client_country_iso,
+      client_gst_no: req.body.data.client_gst_no,
+      client_company_name: req.body.data.client_company_name,
       client_blocked: req.body.data.client_blocked,
+      client_alternate_email: req.body.data.client_alternate_email,
+      client_alternate_mobile: req.body.data.client_alternate_mobile,
     }
     const { error } = validateClient(payload)
     if (error) {
@@ -103,10 +109,16 @@ const updateClient = async (req, res) => {
       client_email: req.body.data.client_email,
       client_name: req.body.data.client_name,
       client_mobile: req.body.data.client_mobile,
-      client_address: req.body.data.client_address,
+      client_shipping_address: req.body.data.client_shipping_address,
+      client_billing_address: req.body.data.client_billing_address,
       client_city: req.body.data.client_city,
-      client_industry: req.body.data.client_industry,
+      client_state: req.body.data.client_state,
+      client_country_iso: req.body.data.client_country_iso,
+      client_gst_no: req.body.data.client_gst_no,
+      client_company_name: req.body.data.client_company_name,
       client_blocked: req.body.data.client_blocked,
+      client_alternate_email: req.body.data.client_alternate_email,
+      client_alternate_mobile: req.body.data.client_alternate_mobile,
     }
     const { error } = validateClient(payload)
 
@@ -132,16 +144,17 @@ const updateClient = async (req, res) => {
         client_email: payload.client_email,
         client_name: payload.client_name,
         client_mobile: payload.client_mobile,
-        client_address: payload.client_address,
+        client_shipping_address: payload.client_shipping_address,
+        client_billing_address: payload.client_billing_address,
         client_city: payload.client_city,
-        client_industry: payload.client_industry,
+        client_state: payload.client_state,
+        client_country_iso: payload.client_country_iso,
+        client_gst_no: payload.client_gst_no,
+        client_company_name: payload.client_company_name,
         client_blocked: payload.client_blocked,
+        client_alternate_email: payload.client_alternate_email,
+        client_alternate_mobile: payload.client_alternate_mobile,
       })
-      //   if (result.client_email == payload.client_email)
-      //     return res.json({
-      //       error: false,
-      //       data: result
-      //     })
       res.json({
         message: 'hello',
         result,
