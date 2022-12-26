@@ -462,6 +462,7 @@ const assignQueryToEmployee = async (req, res) => {
     }
     await result.update({
       employee_id: payload.employee_id,
+      query_state: "running"
     })
     res.json({
       message: 'hello',
