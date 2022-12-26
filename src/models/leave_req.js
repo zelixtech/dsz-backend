@@ -1,8 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    'bank_info',
+    'leave_req',
     {
-      bank_info_id: {
+      leave_req_id: {
         autoIncrement: true,
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -16,39 +16,39 @@ module.exports = function (sequelize, DataTypes) {
           key: 'employee_id',
         },
       },
-      bank_info_name: {
-        type: DataTypes.STRING(255),
+      leave_req_start_date: {
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      bank_info_ifsc_code: {
-        type: DataTypes.STRING(11),
+      leave_req_end_date: {
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      bank_info_branch_name: {
-        type: DataTypes.STRING(255),
+      leave_req_message: {
+        type: DataTypes.STRING(1024),
         allowNull: false,
       },
-      employee_name_as_in_bank: {
+      leave_req_status: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
     },
     {
       sequelize,
-      tableName: 'bank_info',
+      tableName: 'leave_req',
       timestamps: true,
       indexes: [
         {
           name: 'PRIMARY',
           unique: true,
           using: 'BTREE',
-          fields: [{ name: 'bank_id' }],
+          fields: [{ name: 'leave_req_id' }],
         },
         {
-          name: 'bank_info_id_UNIQUE',
+          name: 'leave_req_id_UNIQUE',
           unique: true,
           using: 'BTREE',
-          fields: [{ name: 'bank_info_id' }],
+          fields: [{ name: 'leave_req_id' }],
         },
         {
           name: 'employee_id_idx',
