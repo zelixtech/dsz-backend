@@ -6,6 +6,11 @@ const { queryController } = require('../controllers/')
 
 router.get('/all/client/:client_id', queryController.getAllQueriesOfAClient)
 router.get('/all/active', queryController.getAllQueriesOfActiveClients)
+router.get('/all/active/time', queryController.retrieveAllQueriesInGivenTime)
+router.get(
+  '/all/blocked/time',
+  queryController.retrieveAllQueriesInGivenTimeBlocked
+)
 router.get('/all/blocked', queryController.getAllQueriesOfBlockedClients)
 router.get(
   '/all/unassigned/active',

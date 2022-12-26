@@ -244,6 +244,15 @@ const validateEmpQueryWithStatus = (query) => {
   return schema.validate(query)
 }
 
+const validateTimeInterval = (interval) => {
+  const schema = Joi.object({
+    startTime: Joi.date().format('YYYY-MM-DD HH:MM:SS'),
+    endTime: Joi.date().format('YYYY-MM-DD HH:MM:SS'),
+  })
+
+  return schema.validate(interval)
+}
+
 // (() => {
 //   try {
 //     console.log(validateDate('1999-12-20'));
@@ -261,12 +270,12 @@ const validateEmpQueryWithStatus = (query) => {
 //   }
 // })();
 
-// (() => {
-//   const time = Joi.date().timestamp('javascript').validate(1669558022);
-//   console.log(time);
-//   console.log(Joi.date().timestamp('javascript').validate(900000000));
-//   console.log(Joi.date().timestamp('unix').validate(900000000));
-//   console.log(Joi.date().timestamp('unix').validate(1669558022));
+// ;(() => {
+//   const time = Joi.date().timestamp('javascript').validate(1669558022)
+//   console.log(time)
+//   console.log(Joi.date().timestamp('javascript').validate(900000000))
+//   console.log(Joi.date().timestamp('unix').validate(900000000))
+//   console.log(Joi.date().timestamp('unix').validate(1669558022))
 // })()
 
 module.exports = {
@@ -289,4 +298,5 @@ module.exports = {
   validateLogin,
   validateQueryStatus,
   validateEmpQueryWithStatus,
+  validateTimeInterval,
 }

@@ -5,6 +5,15 @@ const router = express.Router()
 const { clientController } = require('../controllers/')
 
 router.get('/all/active', clientController.retrieveAllActiveClients)
+router.get(
+  '/all/active/time',
+  clientController.retrieveAllActiveClientsInGivenTime
+)
+router.get(
+  '/all/blocked/time',
+  clientController.retrieveAllBlockedClientsInGivenTime
+)
+
 router.get('/all/blocked', clientController.retrieveAllBlockedClients)
 router.get('/check', clientController.checkClientExists)
 router.get('/:client_id', clientController.retrieveClient)

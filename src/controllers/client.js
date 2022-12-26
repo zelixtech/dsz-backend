@@ -270,6 +270,65 @@ const retrieveAllActiveClients = async (req, res) => {
   }
 }
 
+const retrieveAllActiveClientsInGivenTime = async (req, res) => {
+  try {
+    const payload = {
+      start_time: req.query.start_time,
+      end_time: req.query.end_time,
+    }
+
+    let result = await db.client.findAll({
+      where: {
+        client_blocked: 0,
+        createdAt: {
+          [Op.between]: [payload.start_time, payload.end_time],
+        },
+      },
+    })
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+const retrieveAllBlockedClientsInGivenTime = async (req, res) => {
+  try {
+    const payload = {
+      start_time: req.query.start_time,
+      end_time: req.query.end_time,
+    }
+
+    let result = await db.client.findAll({
+      where: {
+        client_blocked: 1,
+        createdAt: {
+          [Op.between]: [payload.start_time, payload.end_time],
+        },
+      },
+    })
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 const retrieveAllBlockedClients = async (req, res) => {
   try {
     let result = await db.client.findAll({
@@ -350,4 +409,6 @@ module.exports = {
   blockClient,
   unblockClient,
   checkClientExists,
+  retrieveAllActiveClientsInGivenTime,
+  retrieveAllBlockedClientsInGivenTime,
 }

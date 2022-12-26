@@ -4,6 +4,7 @@ const {
   validateQueryStatus,
   validateEmpQueryWithStatus,
 } = require('../utils/validate')
+const { Op } = require('sequelize')
 
 const createQuery = async (req, res) => {
   try {
@@ -462,7 +463,7 @@ const assignQueryToEmployee = async (req, res) => {
     }
     await result.update({
       employee_id: payload.employee_id,
-      query_state: "running"
+      query_state: 'running',
     })
     res.json({
       message: 'hello',
@@ -503,6 +504,82 @@ const getThings = async (req, res) => {
   res.json({ results })
 }
 
+const retrieveAllQueriesInGivenTime = async (req, res) => {
+  try {
+    const payload = {
+      start_time: req.query.start_time,
+      end_time: req.query.end_time,
+    }
+    let result = await db.query.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [payload.start_time, payload.end_time],
+        },
+      },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 0,
+          },
+        },
+      ],
+    })
+
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
+  try {
+    const payload = {
+      start_time: req.query.start_time,
+      end_time: req.query.end_time,
+    }
+    let result = await db.query.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [payload.start_time, payload.end_time],
+        },
+      },
+      include: [
+        {
+          model: db.client,
+          as: 'client',
+          where: {
+            client_blocked: 1,
+          },
+        },
+      ],
+    })
+
+    return res.json({
+      error: false,
+      data: result,
+    })
+  } catch (err) {
+    console.log(err)
+    // return { dbError: true };
+    return res.json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 module.exports = {
   createQuery,
   getQuery,
@@ -516,4 +593,6 @@ module.exports = {
   getAllQueriesOfAClient,
   getThings,
   updateQueryStatus,
+  retrieveAllQueriesInGivenTime,
+  retrieveAllQueriesInGivenTimeBlocked,
 }
