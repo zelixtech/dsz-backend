@@ -61,7 +61,7 @@ const validateClient = (client) => {
     client_email: Joi.string().email().min(3).max(320).required(),
     client_name: Joi.string().max(255),
     client_mobile: Joi.string()
-      .length(255)
+      .max(255)
       .pattern(/^[0-9]+$/)
       .required(),
     client_shipping_address: Joi.string().max(1024),
