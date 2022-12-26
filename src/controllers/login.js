@@ -401,9 +401,36 @@ const updateLeaveReqStatus = async (req, res) => {
         errorMessage: 'Leave Request does not Exists',
       })
     }
-    leave.update({
+    await leave.update({
       leave_req_status: 'archive',
     })
+
+    return res.json({
+      data: leave,
+      message: 'hello',
+    })
+  } catch (err) {
+    console.log(err)
+    res.json({
+      error: true,
+      errorType: 'Internal Server Error',
+      errorMessage: 'Internal Server Error',
+    })
+  }
+}
+
+const deleteLeaveReq = async (req, res) => {
+  try {
+    const { leave_req_id } = req.params
+    const leave = await db.leave_req.findByPk(leave_req_id)
+    if (!leave) {
+      return res.json({
+        error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Leave Request does not Exists',
+      })
+    }
+    await leave.destroy()
 
     return res.json({
       data: leave,
@@ -428,4 +455,5 @@ module.exports = {
   getAllLeaveNotifications,
   updateLeaveReqStatus,
   getAllArchivedLeaveNotifications,
+  deleteLeaveReq,
 }
