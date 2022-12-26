@@ -27,5 +27,6 @@ router.patch(
   '/attendance/leave/:leave_req_id',
   loginController.updateLeaveReqStatus
 )
+router.delete('/attendance/leave/:leave_req_id', loginController.deleteLeaveReq)
 
 module.exports = router
