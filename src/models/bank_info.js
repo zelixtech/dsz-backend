@@ -32,6 +32,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
+      bank_account_no: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
     },
     {
       sequelize,
