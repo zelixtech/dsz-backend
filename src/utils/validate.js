@@ -124,6 +124,7 @@ const validateBankInfo = (bank_info) => {
     bank_info_ifsc_code: Joi.string().length(11).required(),
     bank_info_branch_name: Joi.string().min(3).max(255).required(),
     employee_name_as_in_bank: Joi.string().min(3).max(255).required(),
+    bank_account_no: Joi.string().min(3).max(255).required(),
   })
 
   return bankInfoSchema.validate(bank_info)
