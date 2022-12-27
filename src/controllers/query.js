@@ -238,6 +238,7 @@ const updateQueryStatus = async (req, res) => {
 const getAllQueriesOfActiveClients = async (req, res) => {
   try {
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: db.client,
@@ -266,6 +267,7 @@ const getAllQueriesOfActiveClients = async (req, res) => {
 const getAllQueriesOfBlockedClients = async (req, res) => {
   try {
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: db.client,
@@ -307,6 +309,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       })
     }
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         employee_id: payload.employee_id,
         query_state: payload.query_state,
@@ -351,6 +354,7 @@ const getAllQueriesOfAClient = async (req, res) => {
       })
     }
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         client_id: req.params.client_id,
       },
@@ -376,6 +380,7 @@ const getAllQueriesOfAClient = async (req, res) => {
 const getAllUnassignedQueriesActive = async (req, res) => {
   try {
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         employee_id: null,
       },
@@ -420,6 +425,7 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
           },
         },
       ],
+      order: [['createdAt', 'DESC']],
     })
     // console.log(result)
     return res.json({
@@ -512,6 +518,7 @@ const retrieveAllQueriesInGivenTime = async (req, res) => {
       end_time: req.query.end_time,
     }
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         createdAt: {
           [Op.between]: [payload.start_time, payload.end_time],
@@ -550,6 +557,7 @@ const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
       end_time: req.query.end_time,
     }
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         createdAt: {
           [Op.between]: [payload.start_time, payload.end_time],
@@ -587,6 +595,7 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
       .subtract(15, 'd')
       .format('YYYY-MM-DD HH:MM:SS')
     let result = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       where: {
         query_create_time: {
           [Op.lte]: minLastUpdateMoment,
@@ -623,6 +632,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
   try {
     let minLastUpdateMoment = moment().subtract(15, 'd')
     let queries = await db.query.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: db.client,
