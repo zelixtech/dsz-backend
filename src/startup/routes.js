@@ -7,6 +7,7 @@ const {
   auth,
   followup,
   quotation,
+  product,
 } = require('../routes/')
 const { expressSession, sequelizeSessionStore } = require('./db')
 // const expressSession = require('express-session');
@@ -47,6 +48,7 @@ module.exports = (app) => {
   app.use('/api/auth', auth)
   app.use('/api/followup', followup)
   app.use('/api/quotation', quotation)
+  app.use('/api/product', product)
 }
 
 /*

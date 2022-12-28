@@ -5,6 +5,7 @@ require('dotenv').config()
 require('./startup/routes')(app)
 
 const { sequelize } = require('./startup/db')
+const createProductList = require('./startup/createProductList')
 
 app.get('/', async (req, res) => {
   try {

@@ -1,6 +1,4 @@
 const { db } = require('../startup/db')
-const { Op } = require('sequelize')
-const validateQuotation = require('../utils/validate')
 const moment = require('moment')
 
 function getFinancialYear() {
@@ -26,13 +24,13 @@ function buildQuotationNumber(
   return `DSZ${quotation_number}${empFirstLetter}(${quotation_count_no})/20${quotation_financial_year}`
 }
 
-console.log(buildQuotationNumber('0001', 1, '22-23'))
+// console.log(buildQuotationNumber('0001', 1, '22-23'))
 
 const createQuotation = async (req, res) => {
   try {
     const payload = {
       query_id: req.params.query_id,
-      quotation_data: req.body.data.quotation_data,
+      quotation_data: JSON.stringify(req.body.data.quotation_data),
     }
 
     if (isNaN(payload.query_id) || !payload.quotation_data) {

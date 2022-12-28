@@ -630,9 +630,16 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
 
 const getQueriesRunningNoFollowup = async (req, res) => {
   try {
+    const employee_id = req.query.employee_id
+    if (!employee_id || isNaN(employee_id)) {
+      throw new Error('ValidationError')
+    }
     let minLastUpdateMoment = moment().subtract(15, 'd')
     let queries = await db.query.findAll({
       order: [['createdAt', 'DESC']],
+      where: {
+        employee_id: employee_id,
+      },
       include: [
         {
           model: db.client,
@@ -669,7 +676,15 @@ const getQueriesRunningNoFollowup = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
     return res.json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
