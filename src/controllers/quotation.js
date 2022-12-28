@@ -32,7 +32,7 @@ const createQuotation = async (req, res) => {
   try {
     const payload = {
       query_id: req.params.query_id,
-      quotation_data: req.body.data.quotation_data,
+      quotation_data: JSON.stringify(req.body.data.quotation_data),
     }
 
     if (isNaN(payload.query_id) || !payload.quotation_data) {
