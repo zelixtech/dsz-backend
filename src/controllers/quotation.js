@@ -1,42 +1,44 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
 const validateQuotation = require('../utils/validate')
+const moment = require('moment')
 
-// const quotation = async (req, res) => {
-//   try {
-//     const payload = {
-//       query_id: req.body.data.query_id,
-//       employee_id: req.body.data.employee_id,
-//       product_list: req.body.data.product_list,
+function getFinancialYear() {
+  const currentDate = moment()
+  const currentYear = parseInt(currentDate.format('YY'))
+  const startOfFY = moment('03-31', 'MM-DD')
 
-//     }
-//     product_list = [{
-//       "name": "coat",
+  if (currentDate.isAfter(startOfFY)) {
+    let fin_year = `${currentYear}-${currentYear + 1}`
+    return fin_year
+  }
 
-//     }]
-//     const { product_list }
-//   }
-//   catch (err) {
-//     console.log(err);
-//     res.send('error');
-//   }
-// }
+  let fin_year = `${currentYear - 1}-${currentYear}`
+  return fin_year
+}
+
+function buildQuotationNumber(
+  quotation_number,
+  quotation_count_no,
+  quotation_financial_year
+) {
+  const empFirstLetter = 'U'
+  return `DSZ${quotation_number}${empFirstLetter}(${quotation_count_no})/20${quotation_financial_year}`
+}
+
+console.log(buildQuotationNumber('0001', 1, '22-23'))
 
 const createQuotation = async (req, res) => {
   try {
-    // Does Query Exists?
-    // Does Employee Sending Quotation and  Employee Assigned the QUery Same?
-
     const payload = {
       query_id: req.params.query_id,
-      quotation_terms: req.body.data.quotation_terms,
-      quotation_currency: req.body.data.quotation_currency,
+      quotation_data: req.body.data.quotation_data,
     }
 
-    if (isNaN(payload.query_id) || !req.body.products || !req.body.rproducts) {
-      // validation error
-      return
+    if (isNaN(payload.query_id) || !payload.quotation_data) {
+      throw new Error('ValidationError')
     }
+
     const query = await db.query.findByPk(payload.query_id, {
       include: [
         {
@@ -46,87 +48,89 @@ const createQuotation = async (req, res) => {
       ],
     })
     if (!query) {
-      // query for which quotation is being created dne
-      return
+      throw new Error('NotFound')
     }
-    if (query.dataValues.employee_id !== payload.employee_id) {
-      // person creating quotation is not assigned the query
-      return
-    }
-
-    // check products are valid or not?
-    // const productArray = [];
-    // for (product in req.body.products) {
-    //   const productPayload = {
-    //     quotation_id: Joi.number().required(),
-    //     product_isRecommendation: Joi.boolean(),
-    //     product_selling_rate: Joi.number().required(),
-    //     product_quantity: Joi.number().required()
-    //   }
+    // if (query.dataValues.employee_id !== .employee_id) {
+    //   // person creating quotation is not assigned the query
+    //   return
     // }
 
-    /*
-    data[0].products.forEach((d, i) => {
-      const prod = {
-        id: i + 1,
-        description: d.name,
-        data: d.data[0],
-        quantity: d.quantity,
-        thikness: d.thikness,
-        rate: d.rate.toLocaleString('en-IN', {
-          style: 'currency',
-          currency: 'INR'
-        }),
-        unit: d.unit,
-        total: d.quantity * d.rate,
-        subtotal: (d.quantity * d.rate).toLocaleString('en-IN', {
-          style: 'currency',
-          currency: 'INR'
-        })
-      }
-      array.push(prod);
-    });
-    */
+    payload.quotation_financial_year = getFinancialYear()
 
-    const { value, error } = validateQuotation(payload)
-    if (error) {
-      // return { validationError: true }
-      console.log(error)
+    const lastQuote = await db.quotation.findAll({
+      order: [['quotation_number', 'DESC']],
+      limit: 1,
+    })
+
+    if (lastQuote.length === 0) {
+      payload.quotation_number = '0000'
+      payload.quotation_count_no = 0
+      const quotation = db.quotation.build(payload)
+      await quotation.save()
+
       return res.json({
+        error: false,
+        data: quotation,
+      })
+    }
+
+    const lastQuoteOfClient = await db.quotation.findAll({
+      include: [
+        {
+          model: db.query,
+          as: 'query',
+          where: {
+            client_id: query.dataValues.client_id,
+          },
+        },
+      ],
+      order: [['quotation_count_no', 'DESC']],
+      limit: 1,
+    })
+
+    if (lastQuoteOfClient.length === 0) {
+      payload.quotation_count_no = 0
+      payload.quotation_number = String(
+        parseInt(lastQuote[0].quotation_number) + 1
+      ).padStart(4, '0')
+    } else {
+      payload.quotation_count_no = lastQuoteOfClient[0].quotation_count_no + 1
+      payload.quotation_number = lastQuoteOfClient[0].quotation_number
+    }
+
+    const quotation = db.quotation.build(payload)
+    await quotation.save()
+
+    const generatedQuotationNumber = buildQuotationNumber(
+      quotation.quotation_number,
+      quotation.quotation_count_no,
+      quotation.quotation_financial_year
+    )
+
+    return res.json({
+      error: false,
+      data: quotation,
+      generatedQuotationNumber,
+    })
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
-    var quotationExists = await db.quotation.findOne({
-      where: {
-        [Op.or]: [
-          { quotation_email: payload.quotation_email },
-          { quotation_mobile: payload.quotation_mobile },
-          { quotation_office_email: payload.quotation_office_email },
-        ],
-      },
-    })
-    if (quotationExists) {
-      // return { userAlreadyExists: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Quotation Aldready Exists',
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Query Not Found',
         error: true,
       })
     }
 
-    const newQuotation = db.quotation.build(payload)
-    await newQuotation.save()
-    console.log(newQuotation)
-    // return { newQuotation };
-    return res.json({
-      error: false,
-      data: newQuotation,
-    })
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
     return res.json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
@@ -139,31 +143,44 @@ const retrieveQuotation = async (req, res) => {
   try {
     const quotation_id = parseInt(req.params.quotation_id)
     if (isNaN(quotation_id)) {
+      throw new Error('ValidationError')
+    }
+
+    let quotation = await db.quotation.findByPk(quotation_id)
+    if (quotation === null) {
+      throw new Error('NotFound')
+    } else {
+      const generatedQuotationNumber = buildQuotationNumber(
+        quotation.quotation_number,
+        quotation.quotation_count_no,
+        quotation.quotation_financial_year
+      )
+
       return res.json({
+        error: false,
+        data: quotation,
+        generatedQuotationNumber,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.quotation.findByPk(quotation_id)
-    if (result === null) {
-      console.log('not found')
-      // return { quotationNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Quotation Do Not Exists',
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Quotation Not Found',
         error: true,
       })
-    } else {
-      // return { quotation: result }
-      return res.json({
-        error: false,
-        data: result,
-      })
     }
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
+
     return res.json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
@@ -171,9 +188,5 @@ const retrieveQuotation = async (req, res) => {
     })
   }
 }
-
-// (async () => {
-//   retrieveQuotation({ quotation_id: 1 })
-// })()
 
 module.exports = { createQuotation, retrieveQuotation }

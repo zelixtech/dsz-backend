@@ -3,9 +3,8 @@ const express = require('express')
 const router = express.Router()
 
 const { quotationController } = require('../controllers/')
-const { generateQuotationController } = require('../controllers/')
 
-router.post('/', quotationController.createQuotation)
-router.post('/generate', generateQuotationController.generatePdf)
+router.post('/:query_id', quotationController.createQuotation)
+router.get('/:quotation_id', quotationController.retrieveQuotation)
 
 module.exports = router
