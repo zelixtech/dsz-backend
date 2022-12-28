@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize')
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     'quotation',
@@ -10,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
         primaryKey: true,
       },
       quotation_number: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(4),
         allowNull: false,
       },
       query_id: {
@@ -21,31 +20,18 @@ module.exports = function (sequelize, DataTypes) {
           key: 'query_id',
         },
       },
-      quotation_terms: {
-        type: DataTypes.STRING(1024),
-        allowNull: true,
+      quotation_financial_year: {
+        type: DataTypes.STRING(5),
+        allowNull: false,
       },
-      quotation_total_no_of_products: {
+      quotation_count_no: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0,
       },
-      quotation_total_quantity: {
-        type: DataTypes.INTEGER,
+      quotation_data: {
+        type: DataTypes.TEXT('long'),
         allowNull: false,
-      },
-      quotation_total_amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      quotation_date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-      quotation_currency: {
-        type: DataTypes.STRING(10),
-        allowNull: false,
-        defaultValue: 'INR',
       },
     },
     {
