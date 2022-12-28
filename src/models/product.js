@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize')
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     'product',
@@ -9,25 +8,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      quotation_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'quotation',
-          key: 'quotation_id',
-        },
-      },
-      product_isRecommendation: {
-        type: DataTypes.TINYINT,
-        allowNull: false,
-        defaultValue: 0,
-      },
-      product_selling_rate: {
-        type: DataTypes.INTEGER,
+      product_key: {
+        type: DataTypes.STRING(10),
         allowNull: false,
       },
-      product_quantity: {
-        type: DataTypes.INTEGER,
+      product_list: {
+        type: DataTypes.TEXT('medium'),
         allowNull: false,
       },
     },
@@ -47,11 +33,6 @@ module.exports = function (sequelize, DataTypes) {
           unique: true,
           using: 'BTREE',
           fields: [{ name: 'product_id' }],
-        },
-        {
-          name: 'quotation_id_idx',
-          using: 'BTREE',
-          fields: [{ name: 'quotation_id' }],
         },
       ],
     }
