@@ -4,7 +4,6 @@ const { validateClient, validateClientExists } = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
-    // const data = req.body;
     const payload = {
       client_email: req.body.data.client_email,
       client_name: req.body.data.client_name,
@@ -20,17 +19,12 @@ const createClient = async (req, res) => {
       client_alternate_email: req.body.data.client_alternate_email,
       client_alternate_mobile: req.body.data.client_alternate_mobile,
     }
+
     const { error } = validateClient(payload)
     if (error) {
-      // return { validationError: true }
-      console.log(error)
-
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     var clientExists = await db.client.findOne({
       where: {
         [Op.or]: [
@@ -39,26 +33,41 @@ const createClient = async (req, res) => {
         ],
       },
     })
+
     if (clientExists) {
-      // return { clientAlreadyExists: true };
-      return res.json({
-        errorType: 'Bad Request',
+      throw new Error('Conflict')
+    }
+
+    const client = db.client.build(payload)
+    await client.save()
+
+    return res.status(200).json({
+      error: false,
+      data: client,
+    })
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'Conflict') {
+      return res.status(409).json({
+        errorType: 'Conflict',
         errorMessage: 'Client Already Exists',
         error: true,
       })
     }
 
-    const newClient = db.client.build(payload)
-    await newClient.save()
-    console.log(newClient)
-    return res.json({
-      error: false,
-      data: newClient,
-    })
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
-    return res.json({
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -70,32 +79,41 @@ const retrieveClient = async (req, res) => {
   try {
     const client_id = parseInt(req.params.client_id)
     if (isNaN(client_id)) {
-      return res.json({
+      throw new Error('ValidationError')
+    }
+
+    let client = await db.client.findByPk(client_id)
+    if (client === null) {
+      throw new Error('NotFound')
+    } else {
+      return res.status(200).json({
+        error: false,
+        data: client,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id)
-    if (result === null) {
-      console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Do Not Exists',
-        error: true,
-      })
-    } else {
-      // return { client: result }
-      return res.json({
-        error: false,
-        data: result,
-      })
-    }
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -124,23 +142,14 @@ const updateClient = async (req, res) => {
 
     const client_id = parseInt(req.params.client_id)
     if (error || isNaN(client_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
-    let result = await db.client.findByPk(client_id)
-    if (result === null) {
-      console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Do Not Exists',
-        error: true,
-      })
+
+    let client = await db.client.findByPk(client_id)
+    if (client === null) {
+      throw new Error('NotFound')
     } else {
-      await result.update({
+      await client.update({
         client_email: payload.client_email,
         client_name: payload.client_name,
         client_mobile: payload.client_mobile,
@@ -155,27 +164,47 @@ const updateClient = async (req, res) => {
         client_alternate_email: payload.client_alternate_email,
         client_alternate_mobile: payload.client_alternate_mobile,
       })
-      res.json({
-        message: 'hello',
-        result,
+
+      return res.status(200).json({
+        error: false,
+        data: client,
       })
     }
   } catch (err) {
     console.log(err)
+
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
-    } else {
-      return res.json({
-        errorType: 'Server Error',
-        errorMessage: 'Internal Server Error',
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
         error: true,
       })
     }
-    // return { dbError: true };
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
   }
 }
 
@@ -184,35 +213,45 @@ const blockClient = async (req, res) => {
     const client_id = parseInt(req.params.client_id)
 
     if (isNaN(client_id)) {
-      return res.json({
+      throw new Error('ValidationError')
+    }
+
+    let client = await db.client.findByPk(client_id)
+
+    if (client === null) {
+      throw new Error('NotFound')
+    } else {
+      await client.update({
+        client_blocked: true,
+      })
+
+      return res.status(200).json({
+        error: false,
+        data: client,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.client.findByPk(client_id)
-    if (result === null) {
-      console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Do Not Exists',
-        error: true,
-      })
-    } else {
-      // return { client: result }
-      await result.update({
-        client_blocked: true,
-      })
-      return res.json({
-        error: false,
-        data: result,
-      })
-    }
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -225,35 +264,46 @@ const unblockClient = async (req, res) => {
     const client_id = parseInt(req.params.client_id)
 
     if (isNaN(client_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let result = await db.client.findByPk(client_id)
+
     if (result === null) {
-      console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     } else {
-      // return { client: result }
       await result.update({
         client_blocked: false,
       })
-      return res.json({
+
+      return res.status(200).json({
         error: false,
         data: result,
       })
     }
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -268,14 +318,15 @@ const retrieveAllActiveClients = async (req, res) => {
         client_blocked: 0,
       },
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -298,20 +349,22 @@ const retrieveAllActiveClientsInGivenTime = async (req, res) => {
         },
       },
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
     })
   }
 }
+
 const retrieveAllBlockedClientsInGivenTime = async (req, res) => {
   try {
     const payload = {
@@ -327,14 +380,15 @@ const retrieveAllBlockedClientsInGivenTime = async (req, res) => {
         },
       },
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -349,14 +403,14 @@ const retrieveAllBlockedClients = async (req, res) => {
         client_blocked: 1,
       },
     })
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -379,25 +433,30 @@ const checkClientExists = async (req, res) => {
 
     const { error } = validateClientExists(payload)
     if (error) {
-      throw error
+      throw new Error('ValidationError')
     }
 
     const clientExists = await db.client.findOne({
       where: payload,
     })
     if (clientExists) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Already Exists',
-        error: true,
-      })
+      throw new Error('Conflict')
     }
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       message: 'Client does not exists',
     })
   } catch (err) {
     console.log({ err })
+    if (err.message === 'Conflict') {
+      return res.status(409).json({
+        errorType: 'Conflict',
+        errorMessage: 'Employee Already Exists',
+        error: true,
+      })
+    }
+
     if (err.name == 'ValidationError') {
       return res.json({
         errorType: 'Bad Request',
