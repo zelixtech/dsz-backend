@@ -28,6 +28,7 @@ const updateEmployeeBankInfo = async (req, res) => {
         bank_info_ifsc_code: payload.bank_info_ifsc_code,
         employee_name_as_in_bank: payload.employee_name_as_in_bank,
         employee_id: payload.employee_id,
+        bank_account_no: payload.bank_account_no,
       })
 
       return res.status(200).json({
