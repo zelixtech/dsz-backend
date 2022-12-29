@@ -6,5 +6,6 @@ const { quotationController } = require('../controllers/')
 
 router.post('/:query_id', quotationController.createQuotation)
 router.get('/:quotation_id', quotationController.retrieveQuotation)
+router.get('/all/:query_id', quotationController.retrieveQuotationsOfQuery)
 
 module.exports = router

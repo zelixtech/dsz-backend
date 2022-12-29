@@ -6,7 +6,6 @@ const queryController = require('./query')
 const quotationController = require('./quotation')
 const followupController = require('./followup')
 const productController = require('./product')
-const generateQuotationController = require('./quotationGenerator')
 
 module.exports = {
   employeeController,
@@ -16,6 +15,5 @@ module.exports = {
   queryController,
   quotationController,
   followupController,
-  generateQuotationController,
   productController,
 }
