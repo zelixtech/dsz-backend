@@ -24,8 +24,6 @@ function buildQuotationNumber(
   return `DSZ${quotation_number}${empFirstLetter}(${quotation_count_no})/20${quotation_financial_year}`
 }
 
-// console.log(buildQuotationNumber('0001', 1, '22-23'))
-
 const createQuotation = async (req, res) => {
   try {
     const payload = {
@@ -66,7 +64,7 @@ const createQuotation = async (req, res) => {
       const quotation = db.quotation.build(payload)
       await quotation.save()
 
-      return res.json({
+      return res.status(200).json({
         error: false,
         data: quotation,
       })
@@ -105,7 +103,7 @@ const createQuotation = async (req, res) => {
       quotation.quotation_financial_year
     )
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: quotation,
       generatedQuotationNumber,
@@ -129,7 +127,7 @@ const createQuotation = async (req, res) => {
       })
     }
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -154,7 +152,7 @@ const retrieveQuotation = async (req, res) => {
         quotation.quotation_financial_year
       )
 
-      return res.json({
+      return res.status(200).json({
         error: false,
         data: quotation,
         generatedQuotationNumber,
@@ -179,7 +177,7 @@ const retrieveQuotation = async (req, res) => {
       })
     }
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,

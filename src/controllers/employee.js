@@ -25,17 +25,13 @@ const createEmployee = async (req, res) => {
       employee_isHR: req.body.data.employee_isHR || false,
       employee_password: req.body.data.employee_password,
     }
+
     const { error } = validateEmployee(payload)
     if (error) {
-      // return { validationError: true }
-      console.log(error)
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
-    var employeeExists = await db.employee.findOne({
+
+    const employeeExists = await db.employee.findOne({
       where: {
         [Op.or]: [
           { employee_email: payload.employee_email },
@@ -44,27 +40,43 @@ const createEmployee = async (req, res) => {
       },
     })
     if (employeeExists) {
-      // return { userAlreadyExists: true };
-      return res.json({
-        errorType: 'Bad Request',
+      throw new Error('Conflict')
+    }
+
+    const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
+    payload.employee_password = hash
+
+    const employee = db.employee.build(payload)
+    await employee.save()
+
+    return res.status(200).json({
+      error: false,
+      data: employee,
+      message: 'Employee Created',
+    })
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'Conflict') {
+      return res.status(409).json({
+        errorType: 'Conflict',
         errorMessage: 'Employee Already Exists',
         error: true,
       })
     }
-    const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
-    payload.employee_password = hash
-    const newEmployee = db.employee.build(payload)
-    await newEmployee.save()
-    console.log(newEmployee)
-    // return { newEmployee };
-    return res.json({
-      error: false,
-      data: newEmployee,
-    })
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -75,33 +87,44 @@ const createEmployee = async (req, res) => {
 const retrieveEmployee = async (req, res) => {
   try {
     const employee_id = parseInt(req.params.employee_id)
+
     if (isNaN(employee_id)) {
-      return res.json({
+      throw new Error('ValidationError')
+    }
+
+    let employee = await db.employee.findByPk(employee_id)
+
+    if (employee === null) {
+      throw new Error('NotFound')
+    } else {
+      return res.status(200).json({
+        error: false,
+        data: employee,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Employee Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
-    let result = await db.employee.findByPk(employee_id)
-    if (result === null) {
-      console.log('not found')
-      // return { employeeNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Employee Do Not Exists',
-        error: true,
-      })
-    } else {
-      // return { employee: result }
-      return res.json({
-        error: false,
-        data: result,
-      })
-    }
-  } catch (err) {
-    console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -126,29 +149,23 @@ const updateEmployee = async (req, res) => {
       employee_isHR: req.body.data.employee_isHR || false,
       employee_password: req.body.data.employee_password,
     }
-    const { error } = validateEmployee(payload)
 
+    const { error } = validateEmployee(payload)
     const employee_id = parseInt(req.params.employee_id)
+
     if (error || isNaN(employee_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
-    let result = await db.employee.findByPk(employee_id)
-    if (result === null) {
-      console.log('not found')
-      // return { employeeNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Employee Do Not Exists',
-        error: true,
-      })
+
+    let employee = await db.employee.findByPk(employee_id)
+
+    if (employee === null) {
+      throw new Error('NotFound')
     } else {
       const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
       payload.employee_password = hash
-      await result.update({
+
+      await employee.update({
         employee_name: payload.employee_name,
         employee_designation: payload.employee_designation,
         employee_doj: payload.employee_doj,
@@ -163,26 +180,47 @@ const updateEmployee = async (req, res) => {
         employee_isAdmin: payload.employee_isAdmin,
         employee_isHR: payload.employee_isHR,
       })
-      res.json({
-        message: 'hello',
-        result,
+
+      return res.status(200).json({
+        error: false,
+        data: employee,
       })
     }
   } catch (err) {
     console.log(err)
+
     if (err.name === 'SequelizeUniqueConstraintError') {
-      return res.json({
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
-    } else {
-      return res.json({
-        errorType: 'Server Error',
-        errorMessage: 'Internal Server Error',
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Employee Not Found',
         error: true,
       })
     }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
   }
 }
 
@@ -192,38 +230,49 @@ const deleteEmployee = async (req, res) => {
     const payload = {
       employee_relieve_date: req.body.data.employee_relieve_date,
     }
+
     const { error } = validateDate(payload.employee_relieve_date)
 
     if (isNaN(employee_id) || error) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let result = await db.employee.findByPk(employee_id)
     if (result === null) {
-      console.log('not found')
-      // return { employeeNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Employee Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     } else {
-      // return { employee: result }
-      result.update({
+      await result.update({
         employee_relieve_date: payload.employee_relieve_date,
       })
-      return res.json({
+
+      return res.status(200).json({
         error: false,
         data: result,
       })
     }
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Employee Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -233,15 +282,15 @@ const deleteEmployee = async (req, res) => {
 
 const retrieveAllEmployees = async (req, res) => {
   try {
-    let result = await db.employee.findAll()
-    return res.json({
+    let employees = await db.employee.findAll()
+    return res.status(200).json({
       error: false,
-      data: result,
+      data: employees,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -255,6 +304,7 @@ const checkEmpExists = async (req, res) => {
       employee_email: req.query.employee_email,
       employee_mobile: req.query.employee_mobile,
     }
+
     if (payload.employee_email === undefined) {
       delete payload['employee_email']
     }
@@ -264,43 +314,50 @@ const checkEmpExists = async (req, res) => {
 
     const { error } = validateEmpExists(payload)
     if (error) {
-      // return { validationError: true }
-      console.log(error)
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
-    var employeeExists = await db.employee.findOne({
+
+    const employeeExists = await db.employee.findOne({
       where: payload,
     })
+
     if (employeeExists) {
-      // return { userAlreadyExists: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Employee Already Exists',
-        error: true,
-      })
+      throw new Error('Conflict')
     }
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       message: 'Employee does not Exists',
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (err.message === 'Conflict') {
+      return res.status(409).json({
+        errorType: 'Conflict',
+        errorMessage: 'Employee Already Exists',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
     })
   }
 }
-
-// (async () => {
-//   retrieveEmployee({ employee_id: 1 })
-// })()
 
 module.exports = {
   createEmployee,

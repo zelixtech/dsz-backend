@@ -5,6 +5,7 @@ const moment = require('moment')
 const bcrypt = require('bcrypt')
 const {
   validateLogin,
+  validateAttendanceUpdate,
   validateLeaveNotification,
 } = require('../utils/validate')
 
@@ -14,13 +15,10 @@ const login = async (req, res) => {
       email: req.body.data.email,
       password: req.body.data.password,
     }
+
     const { error } = validateLogin(payload)
     if (error) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
 
     const result = await db.employee.findOne({
@@ -33,14 +31,10 @@ const login = async (req, res) => {
       payload.password,
       result.dataValues.employee_password
     )
-    if (checkPassword === true) {
-      // console.log(r
-      // console.log('logged in')
-      // const mom = moment()
 
+    if (checkPassword === true) {
       let current = new Date()
       let hour = current.getHours()
-      // let attendance_MMYY = "";
       let attendance_status = 'leave'
       if (hour < 11) {
         attendance_status = 'half'
@@ -48,7 +42,6 @@ const login = async (req, res) => {
       if (hour < 8) {
         attendance_status = 'full'
       }
-      // let date_of_attendance = "" + String(date.getDay() + 1).padStart(2, '0') + String(date.getMonth() + 1).padStart(2, '0') + current.getFullYear();
 
       let date_of_attendance = moment().format('YYYY-MM-DD')
 
@@ -67,25 +60,40 @@ const login = async (req, res) => {
         await attendanceInfo.save()
       }
 
-      // console.log(result)
       req.session.isAuthenticated = true
       req.session.isAdmin = result.dataValues.isAdmin
       req.session.isHR = result.dataValues.isHR
       req.session.employee_id = result.dataValues.employee_id
-      res.json({
-        result,
+
+      return res.status(200).json({
+        data: result,
+        error: false,
       })
     } else {
-      console.log('password not matched')
-      res.json({
+      return res.status(400).json({
         error: true,
+        errorType: 'Bad Request',
+        errorMessage: 'Wrong Credentials',
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
       error: true,
-      err: err,
     })
   }
 }
@@ -94,6 +102,10 @@ const getAttendanceOfEachEmployee = async (req, res) => {
   try {
     const month = req.query.month
     const year = req.query.year
+    if (!month || isNaN(month) || !year || isNaN(year)) {
+      throw new Error('ValidationError')
+    }
+
     const startOfMonth = parseInt(moment().startOf('month').format('DD'))
     const endOfMonth = parseInt(moment().endOf('month').format('DD'))
     const startDate =
@@ -121,7 +133,6 @@ const getAttendanceOfEachEmployee = async (req, res) => {
     })
 
     attendancesOfEachEmployee.forEach((e) => {
-      // console.log(e.employee_id)
       const currDate = parseInt(moment().format('DD'))
       const arr = []
       let absent = 0,
@@ -139,6 +150,7 @@ const getAttendanceOfEachEmployee = async (req, res) => {
         )
         arr[day] = at.dataValues.attendance_status
       })
+
       for (let x in arr) {
         if (arr[x] === 'half') half++
         if (arr[x] === 'leave') leave++
@@ -156,12 +168,26 @@ const getAttendanceOfEachEmployee = async (req, res) => {
       e.dataValues.attendance_array = arr
     })
 
-    res.json({
+    res.status(200).json({
       data: attendancesOfEachEmployee,
     })
   } catch (err) {
     console.log(err)
-    res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -171,6 +197,11 @@ const getAttendanceOfAEmployee = async (req, res) => {
   try {
     const month = req.query.month
     const year = req.query.year
+
+    if (!month || isNaN(month) || !year || isNaN(year)) {
+      throw new Error('ValidationError')
+    }
+
     const startOfMonth = parseInt(moment().startOf('month').format('DD'))
     const endOfMonth = parseInt(moment().endOf('month').format('DD'))
     const startDate =
@@ -185,7 +216,6 @@ const getAttendanceOfAEmployee = async (req, res) => {
         },
       },
     })
-    // console.log(result);
 
     const currDate = parseInt(moment().format('DD'))
     const arr = []
@@ -203,7 +233,6 @@ const getAttendanceOfAEmployee = async (req, res) => {
       console.log(e)
       let d = parseInt(moment(e.date_of_attendance).format('DD'))
       arr[d] = e.attendance_status
-      // console.log(arr[d])
     })
 
     for (let x in arr) {
@@ -222,7 +251,7 @@ const getAttendanceOfAEmployee = async (req, res) => {
     }
     const attendance_array = arr
 
-    res.json({
+    res.status(200).json({
       data: {
         result,
         attendance_stats,
@@ -231,7 +260,21 @@ const getAttendanceOfAEmployee = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
-    res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
@@ -244,11 +287,11 @@ const updateAttendanceOfAEmployee = async (req, res) => {
       employee_id: req.params.employee_id,
       attendance_status: req.body.data.attendance_status,
     }
-    // const month = req.query.month;
-    // const year = req.query.year;
-    // const date = req.query.date;
-    // const startDate = "" + year + "-" + month + "-01";
-    // const endDate = "" + year + "-" + month + "-31";
+
+    const { error } = validateAttendanceUpdate(payload)
+    if (error) {
+      throw new Error('ValidationError')
+    }
 
     let result = await db.attendance.findOne({
       where: {
@@ -264,38 +307,32 @@ const updateAttendanceOfAEmployee = async (req, res) => {
         attendance_status: payload.attendance_status,
       })
     }
-    // console.log(result)
 
-    res.json({
+    res.status(200).json({
       data: result,
       error: false,
     })
   } catch (err) {
     console.log(err)
-    res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
       error: true,
     })
   }
 }
-
-// const startOfMonth = parseInt(moment().startOf('month').format('DD'));
-// const endOfMonth = parseInt(moment().endOf('month').format('DD'));
-// const startDayOfMonth = (moment().startOf('month').format(''));
-// const endDayOfMonth = moment().endOf('month').day();
-// console.log(endDayOfMonth, startDayOfMonth);
-// const currDate = parseInt(moment().format('DD'));
-// console.log({ startOfMonth, endOfMonth })
-// const arr = [];
-// for (let i = startOfMonth; i <= endOfMonth; ++i) {
-//   let attendance_status = "leave";
-//   if (i > currDate) attendance_status = "pending"
-//   arr.push({ i: attendance_status })
-// }
-
-// console.log(arr);
-// (() => {
-
-// })()
 
 const leaveNotificationToHR = async (req, res) => {
   try {
@@ -309,17 +346,13 @@ const leaveNotificationToHR = async (req, res) => {
 
     const { error } = validateLeaveNotification(payload)
     if (error) {
-      return res.json({
-        error: true,
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-      })
+      throw new Error('ValidationError')
     }
 
     const notif = db.leave_req.build(payload)
     await notif.save()
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: notif,
     })
@@ -327,14 +360,14 @@ const leaveNotificationToHR = async (req, res) => {
     console.log(err.name)
     console.log(err)
     if (err.name === 'SequelizeForeignKeyConstraintError') {
-      return res.json({
+      return res.status(200).json({
         error: true,
         errorType: 'Bad Request',
         errorMessage: 'Employee Do not Exists',
       })
     }
 
-    res.json({
+    res.status(500).json({
       error: true,
       errorType: 'Internal Server Error',
       errorMessage: 'Internal Server Error',
@@ -353,12 +386,12 @@ const getAllLeaveNotifications = async (req, res) => {
         as: 'employee',
       },
     })
-    return res.json({
+    return res.status(200).json({
       data: leaveRequests,
-      message: 'hello',
+      error: false,
     })
   } catch (err) {
-    res.json({
+    res.status(500).json({
       error: true,
       errorType: 'Internal Server Error',
       errorMessage: 'Internal Server Error',
@@ -377,12 +410,12 @@ const getAllArchivedLeaveNotifications = async (req, res) => {
         as: 'employee',
       },
     })
-    return res.json({
+    return res.status(200).json({
       data: leaveRequests,
-      message: 'hello',
+      error: false,
     })
   } catch (err) {
-    res.json({
+    res.status(500).json({
       error: true,
       errorType: 'Internal Server Error',
       errorMessage: 'Internal Server Error',
@@ -395,23 +428,27 @@ const updateLeaveReqStatus = async (req, res) => {
     const { leave_req_id } = req.params
     const leave = await db.leave_req.findByPk(leave_req_id)
     if (!leave) {
-      return res.json({
-        error: true,
-        errorType: 'Bad Request',
-        errorMessage: 'Leave Request does not Exists',
-      })
+      throw new Error('NotFound')
     }
     await leave.update({
       leave_req_status: 'archive',
     })
 
-    return res.json({
+    return res.status(200).json({
       data: leave,
-      message: 'hello',
+      error: false,
     })
   } catch (err) {
     console.log(err)
-    res.json({
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'LeaveRequest Not Found',
+        error: true,
+      })
+    }
+
+    res.status(500).json({
       error: true,
       errorType: 'Internal Server Error',
       errorMessage: 'Internal Server Error',
@@ -424,21 +461,26 @@ const deleteLeaveReq = async (req, res) => {
     const { leave_req_id } = req.params
     const leave = await db.leave_req.findByPk(leave_req_id)
     if (!leave) {
-      return res.json({
-        error: true,
-        errorType: 'Bad Request',
-        errorMessage: 'Leave Request does not Exists',
-      })
+      throw new Error('NotFound')
     }
     await leave.destroy()
 
-    return res.json({
+    return res.status(200).json({
       data: leave,
-      message: 'hello',
+      error: false,
     })
   } catch (err) {
     console.log(err)
-    res.json({
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'LeaveRequest Not Found',
+        error: true,
+      })
+    }
+
+    res.status(200).json({
       error: true,
       errorType: 'Internal Server Error',
       errorMessage: 'Internal Server Error',
