@@ -12,20 +12,21 @@ const appendProduct = async (req, res) => {
         product_key: 'prodList',
       },
     })
+
     const newProductList = JSON.parse(productList.dataValues.product_list)
     newProductList[0][payload.productName] = payload.newProducts
     await productList.update({
       product_list: JSON.stringify(newProductList),
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: productList,
     })
   } catch (err) {
     console.log(err)
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -40,14 +41,15 @@ const retrieveProductList = async (req, res) => {
         product_key: 'prodList',
       },
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: productList,
     })
   } catch (err) {
     console.log(err)
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -68,19 +70,21 @@ const deleteProductFromList = async (req, res) => {
     })
 
     const newProductList = JSON.parse(productList.dataValues.product_list)
+
     delete newProductList[0][payload.productName]
+
     await productList.update({
       product_list: JSON.stringify(newProductList),
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: productList,
     })
   } catch (err) {
     console.log(err)
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,

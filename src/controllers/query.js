@@ -3,13 +3,13 @@ const {
   validateQuery,
   validateQueryStatus,
   validateEmpQueryWithStatus,
+  validateTimeInterval,
 } = require('../utils/validate')
 const { Op } = require('sequelize')
 const moment = require('moment')
 
 const createQuery = async (req, res) => {
   try {
-    // const data = req.body;
     const payload = {
       client_id: req.body.data.client_id,
       employee_id: req.body.data.employee_id,
@@ -20,45 +20,47 @@ const createQuery = async (req, res) => {
       query_message: req.body.data.query_message,
       query_state: req.body.data.query_state,
     }
+
     payload.query_create_time = new Date(payload.query_create_time * 1000)
       .toISOString()
       .slice(0, 19)
       .replace('T', ' ')
 
-    // console.log(payload.query_create_time);
-
     const { error } = validateQuery(payload)
     if (error) {
-      // return { validationError: true }
-      throw error
+      throw new Error('ValidationError')
     }
 
     const newQuery = db.query.build(payload)
     await newQuery.save()
-    // console.log(newQuery)
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: newQuery,
     })
   } catch (err) {
     console.log({ err })
-    // console.log(err.name)
-    // console.log('fdfs')
-    if (err.name == 'ValidationError') {
-      return res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
+
     if (err.name === 'SequelizeForeignKeyConstraintError') {
-      return res.json({
+      return res.status(404).json({
         errorType: 'Bad Request',
         errorMessage: 'Client Do not Exists',
         error: true,
       })
     }
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -70,12 +72,9 @@ const getQuery = async (req, res) => {
   try {
     const query_id = parseInt(req.params.query_id)
     if (isNaN(query_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let result = await db.query.findByPk(query_id, {
       include: [
         {
@@ -84,24 +83,38 @@ const getQuery = async (req, res) => {
         },
       ],
     })
+
     if (result === null) {
-      // console.log('not found')
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Query Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     } else {
-      // return { query: result }
-      return res.json({
+      return res.status(200).json({
         error: false,
         data: result,
       })
     }
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Query Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -121,30 +134,23 @@ const updateQuery = async (req, res) => {
       query_message: req.body.data.query_message,
       query_state: req.body.data.query_state,
     }
+
     payload.query_create_time = new Date(payload.query_create_time * 1000)
       .toISOString()
       .slice(0, 19)
       .replace('T', ' ')
+
     const { error } = validateQuery(payload)
-    console.log(error)
 
     const query_id = parseInt(req.params.query_id)
+
     if (error || isNaN(query_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let result = await db.query.findByPk(query_id)
     if (result === null) {
-      // console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Query Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     } else {
       await result.update({
         client_id: payload.client_id,
@@ -156,27 +162,46 @@ const updateQuery = async (req, res) => {
         query_message: payload.query_message,
         query_state: payload.query_state,
       })
-      res.json({
-        message: 'hello',
-        result,
+
+      return res.status(200).json({
+        error: false,
+        data: result,
       })
     }
   } catch (err) {
     console.log(err)
     if (err.name === 'SequelizeUniqueConstraintError') {
-      return res.json({
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
-    } else {
-      return res.json({
-        errorType: 'Server Error',
-        errorMessage: 'Internal Server Error',
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Query Not Found',
         error: true,
       })
     }
-    // return { dbError: true };
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
   }
 }
 
@@ -187,51 +212,60 @@ const updateQueryStatus = async (req, res) => {
       query_state: req.body.data.query_state,
     }
     const { error } = validateQueryStatus(payload)
-    console.log(error)
 
     const query_id = parseInt(req.params.query_id)
     if (error || isNaN(query_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let result = await db.query.findByPk(query_id)
+
     if (result === null) {
-      // console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Query Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     } else {
       await result.update({
         query_state: payload.query_state,
       })
-      res.json({
-        message: 'hello',
-        result,
+
+      res.status(200).json({
+        error: false,
+        data: result,
       })
     }
   } catch (err) {
     console.log(err)
     if (err.name === 'SequelizeUniqueConstraintError') {
-      // wont occur
-      return res.json({
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
       })
     }
 
-    return res.json({
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Query Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
     })
-    // return { dbError: true };
   }
 }
 
@@ -249,14 +283,15 @@ const getAllQueriesOfActiveClients = async (req, res) => {
         },
       ],
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -278,14 +313,14 @@ const getAllQueriesOfBlockedClients = async (req, res) => {
         },
       ],
     })
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -302,11 +337,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     const { error } = validateEmpQueryWithStatus(payload)
 
     if (error) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
@@ -321,14 +352,26 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
         },
       ],
     })
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -339,19 +382,12 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
 const getAllQueriesOfAClient = async (req, res) => {
   try {
     if (isNaN(req.params.client_id)) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Validation Error',
-        error: true,
-      })
+      throw new Error('ValidationError')
     }
+
     let client = await db.client.findByPk(req.params.client_id)
     if (!client) {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Client Do Not Exists',
-        error: true,
-      })
+      throw new Error('NotFound')
     }
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
@@ -359,7 +395,7 @@ const getAllQueriesOfAClient = async (req, res) => {
         client_id: req.params.client_id,
       },
     })
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: {
         client: client,
@@ -368,8 +404,27 @@ const getAllQueriesOfAClient = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -394,15 +449,15 @@ const getAllUnassignedQueriesActive = async (req, res) => {
         },
       ],
     })
-    // console.log(result)
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -427,15 +482,15 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
       ],
       order: [['createdAt', 'DESC']],
     })
-    // console.log(result)
-    return res.json({
+
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -451,77 +506,72 @@ const assignQueryToEmployee = async (req, res) => {
     }
 
     if (isNaN(payload.employee_id) || isNaN(payload.query_id)) {
-      return res.json({
+      throw new Error('ValidationError')
+    }
+
+    const result = await db.query.findByPk(payload.query_id)
+    if (result === null) {
+      throw new Error('NotFound')
+    }
+
+    await result.update({
+      employee_id: payload.employee_id,
+      query_state: 'running',
+    })
+
+    return res.status(200).json({
+      data: result,
+      error: false,
+    })
+  } catch (err) {
+    console.log(err)
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(404).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Employee Not Found',
+        error: true,
+      })
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Query Not Found',
+        error: true,
+      })
+    }
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
       })
     }
 
-    const result = await db.query.findByPk(payload.query_id)
-    if (result === null) {
-      // console.log('not found')
-      // return { clientNotFound: true };
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Query Do Not Exists',
-        error: true,
-      })
-    }
-    await result.update({
-      employee_id: payload.employee_id,
-      query_state: 'running',
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
     })
-    res.json({
-      message: 'hello',
-      result,
-    })
-  } catch (err) {
-    console.log(err)
-    if (err.name === 'SequelizeForeignKeyConstraintError') {
-      return res.json({
-        errorType: 'Bad Request',
-        errorMessage: 'Employee Doesnot Exist',
-        error: true,
-      })
-    } else {
-      return res.json({
-        errorType: 'Server Error',
-        errorMessage: 'Internal Server Error',
-        error: true,
-      })
-    }
   }
-}
-
-const getThings = async (req, res) => {
-  // console.log({ client: db.client });
-  let results = await db.query.findOne({
-    where: {
-      query_id: 1,
-    },
-    include: [
-      {
-        model: db.client,
-        as: 'client',
-      },
-    ],
-  })
-  // console.log(results)
-  res.json({ results })
 }
 
 const retrieveAllQueriesInGivenTime = async (req, res) => {
   try {
     const payload = {
-      start_time: req.query.start_time,
-      end_time: req.query.end_time,
+      startTime: req.query.start_time,
+      endTime: req.query.end_time,
     }
+
+    const { error } = validateTimeInterval(payload)
+    if (error) throw new Error('ValidationError')
+
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
         createdAt: {
-          [Op.between]: [payload.start_time, payload.end_time],
+          [Op.between]: [payload.startTime, payload.endTime],
         },
       },
       include: [
@@ -535,14 +585,25 @@ const retrieveAllQueriesInGivenTime = async (req, res) => {
       ],
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -553,14 +614,18 @@ const retrieveAllQueriesInGivenTime = async (req, res) => {
 const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
   try {
     const payload = {
-      start_time: req.query.start_time,
-      end_time: req.query.end_time,
+      startTime: req.query.start_time,
+      endTime: req.query.end_time,
     }
+
+    const { error } = validateTimeInterval(payload)
+    if (error) throw new Error('ValidationError')
+
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
         createdAt: {
-          [Op.between]: [payload.start_time, payload.end_time],
+          [Op.between]: [payload.startTime, payload.endTime],
         },
       },
       include: [
@@ -574,14 +639,25 @@ const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
       ],
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -594,6 +670,7 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
     let minLastUpdateMoment = moment()
       .subtract(15, 'd')
       .format('YYYY-MM-DD HH:MM:SS')
+
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
@@ -613,14 +690,14 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
       ],
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
   } catch (err) {
     console.log(err)
-    // return { dbError: true };
-    return res.json({
+
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -634,7 +711,9 @@ const getQueriesRunningNoFollowup = async (req, res) => {
     if (!employee_id || isNaN(employee_id)) {
       throw new Error('ValidationError')
     }
+
     let minLastUpdateMoment = moment().subtract(15, 'd')
+
     let queries = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
@@ -656,6 +735,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
         },
       ],
     })
+
     const result = []
     queries.forEach((value) => {
       if (value.dataValues.followups.length <= 0) {
@@ -670,7 +750,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
       }
     })
 
-    return res.json({
+    return res.status(200).json({
       error: false,
       data: result,
     })
@@ -685,7 +765,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
       })
     }
 
-    return res.json({
+    return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,
@@ -704,7 +784,6 @@ module.exports = {
   getAllUnassignedQueriesBlocked,
   assignQueryToEmployee,
   getAllQueriesOfAClient,
-  getThings,
   updateQueryStatus,
   retrieveAllQueriesInGivenTime,
   retrieveAllQueriesInGivenTimeBlocked,

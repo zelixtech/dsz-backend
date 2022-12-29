@@ -251,6 +251,16 @@ const validateEmpQueryWithStatus = (query) => {
   return schema.validate(query)
 }
 
+const validateAttendanceUpdate = (attendance) => {
+  const schema = Joi.object({
+    employee_id: Joi.number().required(),
+    date_of_attendace: Joi.date().format('YYYY-MM-DD'),
+    attendance_status: Joi.string().required(),
+  })
+
+  return schema.validate(attendance)
+}
+
 const validateTimeInterval = (interval) => {
   const schema = Joi.object({
     startTime: Joi.date().format('YYYY-MM-DD HH:MM:SS'),
@@ -319,4 +329,5 @@ module.exports = {
   validateEmpQueryWithStatus,
   validateTimeInterval,
   validateLeaveNotification,
+  validateAttendanceUpdate,
 }
