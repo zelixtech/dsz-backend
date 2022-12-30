@@ -148,7 +148,7 @@ const getAttendanceOfEachEmployee = async (req, res) => {
         const day = parseInt(
           moment(at.dataValues.date_of_attendance).format('DD')
         )
-        arr[day] = at.dataValues.attendance_status
+        arr[day - 1] = at.dataValues.attendance_status
       })
 
       for (let x in arr) {
@@ -232,7 +232,7 @@ const getAttendanceOfAEmployee = async (req, res) => {
     result.forEach((e) => {
       console.log(e)
       let d = parseInt(moment(e.date_of_attendance).format('DD'))
-      arr[d] = e.attendance_status
+      arr[d - 1] = e.attendance_status
     })
 
     for (let x in arr) {
