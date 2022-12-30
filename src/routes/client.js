@@ -1,25 +1,53 @@
 require('dotenv').config()
 const express = require('express')
 const router = express.Router()
+const {
+  allowEmployee,
+  allowAdmin,
+  allowHR,
+  allowBothAdminAndHR,
+} = require('../middlewares')
 
 const { clientController } = require('../controllers/')
 
-router.get('/all/active', clientController.retrieveAllActiveClients)
+router.get(
+  '/all/active',
+  allowEmployee,
+  clientController.retrieveAllActiveClients
+)
+
 router.get(
   '/all/active/time',
+  allowEmployee,
   clientController.retrieveAllActiveClientsInGivenTime
 )
+
 router.get(
   '/all/blocked/time',
+  allowEmployee,
   clientController.retrieveAllBlockedClientsInGivenTime
 )
 
-router.get('/all/blocked', clientController.retrieveAllBlockedClients)
-router.get('/check', clientController.checkClientExists)
-router.get('/:client_id', clientController.retrieveClient)
-router.post('/', clientController.createClient)
-router.patch('/:client_id', clientController.updateClient)
-router.patch('/:client_id/block', clientController.blockClient)
-router.patch('/:client_id/unblock', clientController.unblockClient)
+router.get(
+  '/all/blocked',
+  allowEmployee,
+  clientController.retrieveAllBlockedClients
+)
+
+router.get('/check', allowEmployee, clientController.checkClientExists)
+
+router.get('/:client_id', allowEmployee, clientController.retrieveClient)
+
+router.post('/', allowEmployee, clientController.createClient)
+
+router.patch('/:client_id', allowEmployee, clientController.updateClient)
+
+router.patch('/:client_id/block', allowEmployee, clientController.blockClient)
+
+router.patch(
+  '/:client_id/unblock',
+  allowEmployee,
+  clientController.unblockClient
+)
 
 module.exports = router

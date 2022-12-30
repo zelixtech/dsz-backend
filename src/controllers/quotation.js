@@ -44,13 +44,15 @@ const createQuotation = async (req, res) => {
         },
       ],
     })
+
     if (!query) {
       throw new Error('NotFound')
     }
-    // if (query.dataValues.employee_id !== .employee_id) {
-    //   // person creating quotation is not assigned the query
-    //   return
-    // }
+
+    if (query.dataValues.employee_id !== req.session.employee_id) {
+      // person creating quotation is not assigned the query
+      throw new Error('Unauthorized')
+    }
 
     payload.quotation_financial_year = getFinancialYear()
 
@@ -118,6 +120,14 @@ const createQuotation = async (req, res) => {
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
+      })
+    }
+
+    if (err.name === 'Unauthorized') {
+      return res.status(401).json({
+        error: true,
+        errorType: 'Unauthorized',
+        errorMessage: 'Unauthorized Access',
       })
     }
 

@@ -349,6 +349,10 @@ const leaveNotificationToHR = async (req, res) => {
       throw new Error('ValidationError')
     }
 
+    if (req.session.id !== payload.employee_id) {
+      throw new Error('Unauthorized')
+    }
+
     const notif = db.leave_req.build(payload)
     await notif.save()
 
@@ -360,16 +364,24 @@ const leaveNotificationToHR = async (req, res) => {
     console.log(err.name)
     console.log(err)
     if (err.name === 'SequelizeForeignKeyConstraintError') {
-      return res.status(200).json({
+      return res.status(400).json({
         error: true,
         errorType: 'Bad Request',
         errorMessage: 'Employee Do not Exists',
       })
     }
 
+    if (err.name === 'Unauthorized') {
+      return res.status(401).json({
+        error: true,
+        errorType: 'Unauthorized',
+        errorMessage: 'Unauthorized Access',
+      })
+    }
+
     res.status(500).json({
       error: true,
-      errorType: 'Internal Server Error',
+      errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
     })
   }
@@ -393,7 +405,7 @@ const getAllLeaveNotifications = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       error: true,
-      errorType: 'Internal Server Error',
+      errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
     })
   }
@@ -417,7 +429,7 @@ const getAllArchivedLeaveNotifications = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       error: true,
-      errorType: 'Internal Server Error',
+      errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
     })
   }
@@ -450,7 +462,7 @@ const updateLeaveReqStatus = async (req, res) => {
 
     res.status(500).json({
       error: true,
-      errorType: 'Internal Server Error',
+      errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
     })
   }
@@ -480,9 +492,9 @@ const deleteLeaveReq = async (req, res) => {
       })
     }
 
-    res.status(200).json({
+    res.status(500).json({
       error: true,
-      errorType: 'Internal Server Error',
+      errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
     })
   }
