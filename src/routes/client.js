@@ -33,11 +33,17 @@ router.get(
   allowEmployee,
   clientController.retrieveAllBlockedClients
 )
+
 router.get('/check', allowEmployee, clientController.checkClientExists)
+
 router.get('/:client_id', allowEmployee, clientController.retrieveClient)
+
 router.post('/', allowEmployee, clientController.createClient)
+
 router.patch('/:client_id', allowEmployee, clientController.updateClient)
+
 router.patch('/:client_id/block', allowEmployee, clientController.blockClient)
+
 router.patch(
   '/:client_id/unblock',
   allowEmployee,

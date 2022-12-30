@@ -223,6 +223,14 @@ const updateQueryStatus = async (req, res) => {
     if (result === null) {
       throw new Error('NotFound')
     } else {
+      if (
+        result.dataValues.employee_id !== req.session.employee_id ||
+        !req.session.isAdmin ||
+        !req.session.isHR
+      ) {
+        throw new Error('Unauthorized')
+      }
+
       await result.update({
         query_state: payload.query_state,
       })
@@ -239,6 +247,14 @@ const updateQueryStatus = async (req, res) => {
         errorType: 'Bad Request',
         errorMessage: 'Unique Field Required',
         error: true,
+      })
+    }
+
+    if (err.name === 'Unauthorized') {
+      return res.status(401).json({
+        error: true,
+        errorType: 'Unauthorized',
+        errorMessage: 'Unauthorized Access',
       })
     }
 
@@ -339,6 +355,15 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     if (error) {
       throw new Error('ValidationError')
     }
+
+    if (
+      payload.employee_id !== req.session.employee_id ||
+      !req.session.isAdmin ||
+      !req.session.isHR
+    ) {
+      throw new Error('Unauthorized')
+    }
+
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
@@ -371,6 +396,14 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       })
     }
 
+    if (err.name === 'Unauthorized') {
+      return res.status(401).json({
+        error: true,
+        errorType: 'Unauthorized',
+        errorMessage: 'Unauthorized Access',
+      })
+    }
+
     return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
@@ -389,12 +422,14 @@ const getAllQueriesOfAClient = async (req, res) => {
     if (!client) {
       throw new Error('NotFound')
     }
+
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {
         client_id: req.params.client_id,
       },
     })
+
     return res.status(200).json({
       error: false,
       data: {

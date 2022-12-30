@@ -39,9 +39,10 @@ router.put(
   allowBothAdminAndHR,
   bankInfoController.updateEmployeeBankInfo
 )
+
 router.get(
   '/bankinfo/:employee_id',
-  allowEmployee,
+  allowBothAdminAndHR,
   bankInfoController.retrieveEmployeeBankInfo
 )
 
