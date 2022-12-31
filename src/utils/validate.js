@@ -263,8 +263,8 @@ const validateAttendanceUpdate = (attendance) => {
 
 const validateTimeInterval = (interval) => {
   const schema = Joi.object({
-    startTime: Joi.date().format('YYYY-MM-DD HH:MM:SS'),
-    endTime: Joi.date().format('YYYY-MM-DD HH:MM:SS'),
+    startTime: Joi.date().format('YYYY-MM-DD hh:mm:ss').required(),
+    endTime: Joi.date().format('YYYY-MM-DD hh:mm:ss').required(),
   })
 
   return schema.validate(interval)

@@ -5,5 +5,15 @@ const auth = require('./auth')
 const followup = require('./followup')
 const quotation = require('./quotation')
 const product = require('./product')
+const admin = require('./admin')
 
-module.exports = { query, client, employee, auth, followup, quotation, product }
+module.exports = {
+  query,
+  client,
+  employee,
+  auth,
+  followup,
+  quotation,
+  admin,
+  product,
+}
