@@ -263,7 +263,7 @@ const retrieveQuotationsOfQuery = async (req, res) => {
     if (err.message === 'NotFound') {
       return res.status(404).json({
         errorType: 'Not Found',
-        errorMessage: 'Query Not Found',
+        errorMessage: 'Quotations Not Found',
         error: true,
       })
     }
