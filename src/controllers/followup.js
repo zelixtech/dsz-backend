@@ -28,7 +28,7 @@ const createFollowup = async (req, res) => {
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     const followup = db.followup.build(payload)
@@ -51,11 +51,11 @@ const createFollowup = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Forbidden Access',
       })
     }
 
@@ -100,7 +100,7 @@ const getFollowupsForQuery = async (req, res) => {
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     const result = await db.followup.findAll({
@@ -116,11 +116,11 @@ const getFollowupsForQuery = async (req, res) => {
   } catch (err) {
     console.log(err)
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Forbidden Access',
       })
     }
 
@@ -181,7 +181,7 @@ const updateFollowup = async (req, res) => {
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     await followup.update({
@@ -203,11 +203,11 @@ const updateFollowup = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Forbidden Access',
       })
     }
 

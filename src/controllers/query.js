@@ -228,7 +228,7 @@ const updateQueryStatus = async (req, res) => {
         !req.session.isAdmin ||
         !req.session.isHR
       ) {
-        throw new Error('Unauthorized')
+        throw new Error('Forbidden')
       }
 
       await result.update({
@@ -250,11 +250,11 @@ const updateQueryStatus = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Access Forbidden',
       })
     }
 
@@ -361,7 +361,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       !req.session.isAdmin ||
       !req.session.isHR
     ) {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     let result = await db.query.findAll({
@@ -396,11 +396,11 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Access Forbidden',
       })
     }
 
@@ -706,6 +706,7 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
       .subtract(15, 'd')
       .format('YYYY-MM-DD HH:MM:SS')
 
+    minLastUpdateMoment = Date(minLastUpdateMoment)
     let result = await db.query.findAll({
       order: [['createdAt', 'DESC']],
       where: {

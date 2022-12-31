@@ -51,7 +51,7 @@ const createQuotation = async (req, res) => {
 
     if (query.dataValues.employee_id !== req.session.employee_id) {
       // person creating quotation is not assigned the query
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     payload.quotation_financial_year = getFinancialYear()
@@ -123,11 +123,11 @@ const createQuotation = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Forbidden Access',
       })
     }
 
