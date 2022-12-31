@@ -20,14 +20,26 @@ const corsOptions = {
 var morgan = require('morgan')
 var fs = require('fs')
 var path = require('path')
+const { default: helmet } = require('helmet')
+const toobusy = require('toobusy-js')
+const compression = require('compression')
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
   flags: 'a',
 })
 
 module.exports = (app) => {
   app.use(cors(corsOptions))
+  app.use(helmet())
   app.use(morgan('combined', { stream: accessLogStream }))
   app.use(bodyParser.json())
+  app.use(compression())
+  app.use(function (req, res, next) {
+    if (toobusy()) {
+      res.send(503, 'Server too busy!')
+    } else {
+      next()
+    }
+  })
   app.use(
     expressSession({
       name: 'darshanSession',

@@ -61,8 +61,8 @@ const login = async (req, res) => {
       }
 
       req.session.isAuthenticated = true
-      req.session.isAdmin = result.dataValues.isAdmin
-      req.session.isHR = result.dataValues.isHR
+      req.session.isAdmin = result.dataValues.employee_isAdmin
+      req.session.isHR = result.dataValues.employee_isHR
       req.session.employee_id = result.dataValues.employee_id
 
       return res.status(200).json({
@@ -350,7 +350,7 @@ const leaveNotificationToHR = async (req, res) => {
     }
 
     if (req.session.id !== payload.employee_id) {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden')
     }
 
     const notif = db.leave_req.build(payload)
@@ -371,11 +371,11 @@ const leaveNotificationToHR = async (req, res) => {
       })
     }
 
-    if (err.name === 'Unauthorized') {
-      return res.status(401).json({
+    if (err.name === 'Forbidden') {
+      return res.status(403).json({
         error: true,
-        errorType: 'Unauthorized',
-        errorMessage: 'Unauthorized Access',
+        errorType: 'Forbidden',
+        errorMessage: 'Forbidden Access',
       })
     }
 

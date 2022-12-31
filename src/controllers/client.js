@@ -1,6 +1,10 @@
 const { db } = require('../startup/db')
 const { Op } = require('sequelize')
-const { validateClient, validateClientExists } = require('../utils/validate')
+const {
+  validateClient,
+  validateClientExists,
+  validateTimeInterval,
+} = require('../utils/validate')
 
 const createClient = async (req, res) => {
   try {
@@ -326,6 +330,17 @@ const retrieveAllActiveClients = async (req, res) => {
   } catch (err) {
     console.log(err)
 
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
     return res.status(500).json({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
@@ -337,15 +352,18 @@ const retrieveAllActiveClients = async (req, res) => {
 const retrieveAllActiveClientsInGivenTime = async (req, res) => {
   try {
     const payload = {
-      start_time: req.query.start_time,
-      end_time: req.query.end_time,
+      startTime: req.query.start_time,
+      endTime: req.query.end_time,
     }
+
+    const { error } = validateTimeInterval(payload)
+    if (error) throw new Error('ValidationError')
 
     let result = await db.client.findAll({
       where: {
         client_blocked: 0,
         createdAt: {
-          [Op.between]: [payload.start_time, payload.end_time],
+          [Op.between]: [payload.startTime, payload.endTime],
         },
       },
     })
@@ -356,6 +374,17 @@ const retrieveAllActiveClientsInGivenTime = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -368,15 +397,18 @@ const retrieveAllActiveClientsInGivenTime = async (req, res) => {
 const retrieveAllBlockedClientsInGivenTime = async (req, res) => {
   try {
     const payload = {
-      start_time: req.query.start_time,
-      end_time: req.query.end_time,
+      startTime: req.query.start_time,
+      endTime: req.query.end_time,
     }
+
+    const { error } = validateTimeInterval(payload)
+    if (error) throw new Error('ValidationError')
 
     let result = await db.client.findAll({
       where: {
         client_blocked: 1,
         createdAt: {
-          [Op.between]: [payload.start_time, payload.end_time],
+          [Op.between]: [payload.startTime, payload.endTime],
         },
       },
     })
