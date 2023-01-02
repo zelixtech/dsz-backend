@@ -63,6 +63,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(1024),
         allowNull: true,
       },
+      client_isNew: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        defaultValue: 'new',
+      },
     },
     {
       sequelize,
