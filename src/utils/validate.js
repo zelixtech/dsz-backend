@@ -58,22 +58,22 @@ const validateClientExists = (client) => {
 
 const validateClient = (client) => {
   const clientSchema = Joi.object({
-    client_email: Joi.string().email().min(3).max(320).required(),
-    client_name: Joi.string().max(255),
+    client_email: Joi.string().email().min(3).max(320).allow(''),
+    client_name: Joi.string().max(255).allow(''),
     client_mobile: Joi.string()
       .max(255)
       .pattern(/^[0-9]+$/)
       .required(),
-    client_shipping_address: Joi.string().max(1024),
-    client_billing_address: Joi.string().max(1024),
-    client_city: Joi.string().max(255),
-    client_state: Joi.string().max(255),
-    client_country_iso: Joi.string().max(255),
-    client_company_name: Joi.string().max(255),
-    client_gst_no: Joi.string().max(255),
+    client_shipping_address: Joi.string().max(1024).allow(''),
+    client_billing_address: Joi.string().max(1024).allow(''),
+    client_city: Joi.string().max(255).allow(''),
+    client_state: Joi.string().max(255).allow(''),
+    client_country_iso: Joi.string().max(255).allow(''),
+    client_company_name: Joi.string().max(255).allow(''),
+    client_gst_no: Joi.string().max(255).allow(''),
     client_blocked: Joi.boolean(),
-    client_alternate_email: Joi.string().max(1024),
-    client_alternate_mobile: Joi.string().max(255),
+    client_alternate_email: Joi.string().max(1024).allow(''),
+    client_alternate_mobile: Joi.string().max(255).allow(''),
   })
 
   return clientSchema.validate(client)
@@ -97,16 +97,16 @@ const validateClient = (client) => {
 //   return quotationSchema.validate(quotation);
 // }
 
-const validateQuotation = (quotation) => {
-  const quotationSchema = Joi.object({
-    // quotation_number: Joi.string().min(8).max(12).required(),
-    query_id: Joi.number().required(),
-    quotation_terms: Joi.string().max(1024),
-    quotation_currency: Joi.string().length(3).valid('INR', 'USD'),
-  })
+// const validateQuotation = (quotation) => {
+//   const quotationSchema = Joi.object({
+//     // quotation_number: Joi.string().min(8).max(12).required(),
+//     query_id: Joi.number().required(),
+//     quotation_terms: Joi.string().max(1024),
+//     quotation_currency: Joi.string().length(3).valid('INR', 'USD'),
+//   })
 
-  return quotationSchema.validate(quotation)
-}
+//   return quotationSchema.validate(quotation)
+// }
 
 // const validateAttendance = (attendance) => {
 //   const attendanceSchema = Joi.object({
@@ -180,10 +180,10 @@ const validateQuery = (query) => {
     employee_id: Joi.number(),
     query_source: Joi.string().min(3).max(255).required(),
     query_create_time: Joi.date(),
-    query_subject: Joi.string().min(3).max(255),
-    query_product: Joi.string().min(3).max(255),
-    query_message: Joi.string().min(3).max(1024),
-    query_state: Joi.string().min(3).max(255),
+    query_subject: Joi.string().min(3).max(255).allow(''),
+    query_product: Joi.string().min(3).max(255).allow(''),
+    query_message: Joi.string().min(3).max(1024).allow(''),
+    query_state: Joi.string().min(3).max(255).allow(''),
   })
 
   return querySchema.validate(query)
@@ -320,7 +320,7 @@ module.exports = {
   validateProduct,
   validatePurchaseOrder,
   validateQuery,
-  validateQuotation,
+  // validateQuotation,
   validateVendor,
   validateDate,
   validateFollowupText,

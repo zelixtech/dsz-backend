@@ -30,12 +30,7 @@ const createClient = async (req, res) => {
     }
 
     var clientExists = await db.client.findOne({
-      where: {
-        [Op.or]: [
-          { client_email: payload.client_email },
-          { client_mobile: payload.client_mobile },
-        ],
-      },
+      where: { client_mobile: payload.client_mobile },
     })
 
     if (clientExists) {
