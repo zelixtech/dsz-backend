@@ -24,7 +24,7 @@ const createFollowup = async (req, res) => {
     }
 
     if (
-      getQuery.dataVales.employee_id !== req.session.employee_id &&
+      getQuery.dataValues.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
@@ -96,7 +96,7 @@ const getFollowupsForQuery = async (req, res) => {
     }
 
     if (
-      getQuery.dataVales.employee_id !== req.session.employee_id &&
+      getQuery.alues.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
@@ -177,7 +177,7 @@ const updateFollowup = async (req, res) => {
     }
 
     if (
-      followup.dataVales.query.employee_id !== req.session.employee_id &&
+      followup.dataValues.query.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
