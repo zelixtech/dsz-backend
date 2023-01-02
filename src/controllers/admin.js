@@ -133,8 +133,28 @@ const removeIpAddress = async (req, res) => {
   }
 }
 
+const showAllIpAddresses = async (req, res) => {
+  try {
+    const ip_addresses = await db.ip_addr.findAll()
+
+    return res.status(200).json({
+      error: false,
+      data: ip_addresses,
+    })
+  } catch (err) {
+    console.log(err)
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 module.exports = {
   getStats,
   addIpAddress,
   removeIpAddress,
+  showAllIpAddresses,
 }
