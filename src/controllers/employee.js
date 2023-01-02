@@ -11,6 +11,9 @@ const bcrypt = require('bcrypt')
 
 const createEmployee = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       employee_name: req.body.data.employee_name,
       employee_designation: req.body.data.employee_designation,
@@ -136,6 +139,9 @@ const retrieveEmployee = async (req, res) => {
 
 const updateEmployee = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       employee_name: req.body.data.employee_name,
       employee_designation: req.body.data.employee_designation,
@@ -221,6 +227,9 @@ const updateEmployee = async (req, res) => {
 
 const deleteEmployee = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const employee_id = parseInt(req.params.employee_id)
     const payload = {
       employee_relieve_date: req.body.data.employee_relieve_date,

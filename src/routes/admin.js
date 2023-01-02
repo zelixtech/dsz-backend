@@ -6,5 +6,11 @@ const { adminController } = require('../controllers/')
 const { allowAdmin } = require('../middlewares')
 
 router.get('/stats', allowAdmin, adminController.getStats)
+router.post('/ipAddress', allowAdmin, adminController.addIpAddress)
+router.delete(
+  '/ipAddress/:ip_addr_id',
+  allowAdmin,
+  adminController.removeIpAddress
+)
 
 module.exports = router

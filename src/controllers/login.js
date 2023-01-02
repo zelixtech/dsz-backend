@@ -11,6 +11,9 @@ const {
 
 const login = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       email: req.body.data.email,
       password: req.body.data.password,
@@ -282,6 +285,9 @@ const getAttendanceOfAEmployee = async (req, res) => {
 
 const updateAttendanceOfAEmployee = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       date_of_attendance: req.body.data.date_of_attendance,
       employee_id: req.params.employee_id,
@@ -336,6 +342,9 @@ const updateAttendanceOfAEmployee = async (req, res) => {
 
 const leaveNotificationToHR = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       leave_req_start_date: req.body.data.leave_req_start_date,
       leave_req_end_date: req.body.data.leave_req_end_date,
@@ -368,6 +377,17 @@ const leaveNotificationToHR = async (req, res) => {
         error: true,
         errorType: 'Bad Request',
         errorMessage: 'Employee Do not Exists',
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
       })
     }
 

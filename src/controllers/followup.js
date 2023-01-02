@@ -3,6 +3,9 @@ const { validateFollowup, validateFollowupText } = require('../utils/validate')
 
 const createFollowup = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       query_id: req.body.data.query_id,
       followup_text: req.body.data.followup_text,
@@ -153,6 +156,9 @@ const getFollowupsForQuery = async (req, res) => {
 
 const updateFollowup = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       followup_id: req.params.followup_id,
       followup_text: req.body.data.followup_text,
