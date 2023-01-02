@@ -4,6 +4,7 @@ const {
   validateEmployee,
   validateDate,
   validateEmpExists,
+  validateEmployeeWOP,
 } = require('../utils/validate')
 const saltRounds = 10
 const bcrypt = require('bcrypt')
@@ -24,6 +25,7 @@ const createEmployee = async (req, res) => {
       employee_isAdmin: req.body.data.employee_isAdmin || false,
       employee_isHR: req.body.data.employee_isHR || false,
       employee_password: req.body.data.employee_password,
+      employee_allow_indiamart: req.body.data.employee_allow_indiamart || true,
     }
 
     const { error } = validateEmployee(payload)
@@ -148,9 +150,14 @@ const updateEmployee = async (req, res) => {
       employee_isAdmin: req.body.data.employee_isAdmin || false,
       employee_isHR: req.body.data.employee_isHR || false,
       employee_password: req.body.data.employee_password,
+      employee_allow_indiamart: req.body.data.employee_allow_indiamart || true,
     }
 
-    const { error } = validateEmployee(payload)
+    if (payload.employee_password === undefined) {
+      delete payload['employee_password']
+    }
+
+    const { error } = validateEmployeeWOP(payload)
     const employee_id = parseInt(req.params.employee_id)
 
     if (error || isNaN(employee_id)) {
@@ -162,24 +169,12 @@ const updateEmployee = async (req, res) => {
     if (employee === null) {
       throw new Error('NotFound')
     } else {
-      const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
-      payload.employee_password = hash
+      if (payload.employee_password !== undefined) {
+        const hash = bcrypt.hashSync(payload.employee_password, saltRounds)
+        payload.employee_password = hash
+      }
 
-      await employee.update({
-        employee_name: payload.employee_name,
-        employee_designation: payload.employee_designation,
-        employee_doj: payload.employee_doj,
-        employee_office_email: payload.employee_office_email,
-        employee_email: payload.employee_email,
-        employee_mobile: payload.employee_mobile,
-        employee_dob: payload.employee_dob,
-        employee_address: payload.employee_address,
-        employee_relieve_date: payload.employee_relieve_date,
-        employee_department: payload.employee_department,
-        employee_password: payload.employee_password,
-        employee_isAdmin: payload.employee_isAdmin,
-        employee_isHR: payload.employee_isHR,
-      })
+      await employee.update(payload)
 
       return res.status(200).json({
         error: false,

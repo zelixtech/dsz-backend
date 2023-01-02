@@ -19,8 +19,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       client_email: {
         type: DataTypes.STRING(320),
-        allowNull: false,
-        unique: 'client_email_UNIQUE',
+        allowNull: true,
       },
       client_billing_address: {
         type: DataTypes.STRING(1024),
@@ -63,6 +62,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(1024),
         allowNull: true,
       },
+      client_isNew: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        defaultValue: 'new',
+      },
     },
     {
       sequelize,
@@ -80,12 +84,6 @@ module.exports = function (sequelize, DataTypes) {
           unique: true,
           using: 'BTREE',
           fields: [{ name: 'client_id' }],
-        },
-        {
-          name: 'client_email_UNIQUE',
-          unique: true,
-          using: 'BTREE',
-          fields: [{ name: 'client_email' }],
         },
         {
           name: 'client_mobile_UNIQUE',

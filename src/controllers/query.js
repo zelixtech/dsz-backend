@@ -34,6 +34,19 @@ const createQuery = async (req, res) => {
     const newQuery = db.query.build(payload)
     await newQuery.save()
 
+    const cntQueries = await db.query.count({
+      where: {
+        client_id: payload.client_id,
+      },
+    })
+
+    if (cntQueries > 1) {
+      const client = await db.client.findByPk(payload.client_id)
+      await client.update({
+        client_isNew: 'old',
+      })
+    }
+
     return res.status(200).json({
       error: false,
       data: newQuery,
@@ -233,6 +246,11 @@ const updateQueryStatus = async (req, res) => {
 
       await result.update({
         query_state: payload.query_state,
+      })
+
+      const client = await db.client.findByPk(result.dataValues.client_id)
+      await client.update({
+        client_isNew: 'old',
       })
 
       res.status(200).json({
@@ -552,6 +570,11 @@ const assignQueryToEmployee = async (req, res) => {
     await result.update({
       employee_id: payload.employee_id,
       query_state: 'running',
+    })
+
+    const client = await db.client.findByPk(result.dataValues.client_id)
+    await client.update({
+      client_isNew: 'old',
     })
 
     return res.status(200).json({
