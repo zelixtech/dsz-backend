@@ -60,10 +60,67 @@ const getStats = async (req, res) => {
       })
     }
 
-    if (err.message === 'NotFound') {
-      return res.status(404).json({
-        errorType: 'Not Found',
-        errorMessage: 'Employee Bank Info Not Found',
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const addIpAddress = async (req, res) => {
+  try {
+    if (!req.body.data || !req.body.data.ip_address)
+      throw new Error('ValidationError')
+
+    const ip_address = db.ip_addr.build({
+      ip_address: req.body.data.ip_address,
+    })
+    await ip_address.save()
+
+    return res.status(200).json({
+      error: false,
+      data: ip_address,
+    })
+  } catch (err) {
+    console.log(err)
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const removeIpAddress = async (req, res) => {
+  try {
+    if (!req.params.ip_addr_id || isNaN(req.params.ip_addr_id))
+      throw new Error('ValidationError')
+
+    const itemsDeleted = await db.ip_addr.destroy({
+      where: {
+        ip_addr_id: req.params.ip_addr_id,
+      },
+    })
+
+    return res.status(200).json({
+      error: false,
+      message: `${itemsDeleted} item(s) deleted successfully`,
+    })
+  } catch (err) {
+    console.log(err)
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
         error: true,
       })
     }
@@ -78,4 +135,6 @@ const getStats = async (req, res) => {
 
 module.exports = {
   getStats,
+  addIpAddress,
+  removeIpAddress,
 }

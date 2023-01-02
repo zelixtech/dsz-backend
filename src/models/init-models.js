@@ -11,6 +11,7 @@ var _query = require('./query')
 var _quotation = require('./quotation')
 var _vendor = require('./vendor')
 var _leave_req = require('./leave_req')
+var _ip_addr = require('./ip_addr')
 
 function initModels(sequelize) {
   var attendance = _attendance(sequelize, DataTypes)
@@ -25,6 +26,7 @@ function initModels(sequelize) {
   var quotation = _quotation(sequelize, DataTypes)
   var vendor = _vendor(sequelize, DataTypes)
   var leave_req = _leave_req(sequelize, DataTypes)
+  var ip_addr = _ip_addr(sequelize, DataTypes)
 
   leave_req.belongsTo(employee, { as: 'employee', foreignKey: 'employee_id' })
   employee.hasMany(leave_req, { as: 'leaves', foreignKey: 'employee_id' })
@@ -72,6 +74,7 @@ function initModels(sequelize) {
     quotation,
     vendor,
     leave_req,
+    ip_addr,
   }
 }
 module.exports = initModels

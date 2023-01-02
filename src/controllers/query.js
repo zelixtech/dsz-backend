@@ -10,6 +10,9 @@ const moment = require('moment')
 
 const createQuery = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       client_id: req.body.data.client_id,
       employee_id: req.body.data.employee_id,
@@ -137,6 +140,9 @@ const getQuery = async (req, res) => {
 
 const updateQuery = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       client_id: req.body.data.client_id,
       employee_id: req.body.data.employee_id,
@@ -220,6 +226,9 @@ const updateQuery = async (req, res) => {
 
 const updateQueryStatus = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       query_id: req.params.query_id,
       query_state: req.body.data.query_state,
@@ -553,6 +562,9 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
 
 const assignQueryToEmployee = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       employee_id: req.body.data.employee_id,
       query_id: req.body.data.query_id,

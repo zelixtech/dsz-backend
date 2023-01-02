@@ -284,7 +284,7 @@ const validateEmpQueryWithStatus = (query) => {
 const validateAttendanceUpdate = (attendance) => {
   const schema = Joi.object({
     employee_id: Joi.number().required(),
-    date_of_attendace: Joi.date().format('YYYY-MM-DD'),
+    date_of_attendance: Joi.date().format('YYYY-MM-DD'),
     attendance_status: Joi.string().required(),
   })
 

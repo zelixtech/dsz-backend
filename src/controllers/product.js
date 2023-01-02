@@ -2,6 +2,9 @@ const { db } = require('../startup/db')
 
 const appendProduct = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       newProducts: req.body.data.newProducts,
       productName: req.body.data.productName,
@@ -59,6 +62,9 @@ const retrieveProductList = async (req, res) => {
 
 const deleteProductFromList = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       productName: req.body.data.productName,
     }

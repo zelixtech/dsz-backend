@@ -3,6 +3,9 @@ const { validateBankInfo } = require('../utils/validate')
 
 const updateEmployeeBankInfo = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       bank_info_name: req.body.data.bank_info_name,
       bank_info_branch_name: req.body.data.bank_info_branch_name,
@@ -76,6 +79,9 @@ const updateEmployeeBankInfo = async (req, res) => {
 
 const retrieveEmployeeBankInfo = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const employee_id = parseInt(req.params.employee_id)
     if (isNaN(employee_id)) {
       throw new Error('ValidationError')

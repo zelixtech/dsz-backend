@@ -8,6 +8,9 @@ const {
 
 const createClient = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       client_email: req.body.data.client_email,
       client_name: req.body.data.client_name,
@@ -122,6 +125,9 @@ const retrieveClient = async (req, res) => {
 
 const updateClient = async (req, res) => {
   try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
     const payload = {
       client_email: req.body.data.client_email,
       client_name: req.body.data.client_name,
