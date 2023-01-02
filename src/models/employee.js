@@ -54,14 +54,21 @@ module.exports = function (sequelize, DataTypes) {
       employee_isAdmin: {
         type: DataTypes.TINYINT,
         allowNull: false,
+        defaultValue: false,
       },
       employee_isHR: {
         type: DataTypes.TINYINT,
         allowNull: false,
+        defaultValue: false,
       },
       employee_password: {
         type: DataTypes.STRING(255),
         allowNull: false,
+      },
+      employee_allow_indiamart: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: true,
       },
     },
     {
