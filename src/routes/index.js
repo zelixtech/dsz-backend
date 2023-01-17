@@ -6,6 +6,7 @@ const followup = require('./followup')
 const quotation = require('./quotation')
 const product = require('./product')
 const admin = require('./admin')
+const invoice = require('./invoice')
 
 module.exports = {
   query,
@@ -16,4 +17,5 @@ module.exports = {
   quotation,
   admin,
   product,
+  invoice,
 }

@@ -9,6 +9,7 @@ var _product = require('./product')
 var _purchase_order = require('./purchase_order')
 var _query = require('./query')
 var _quotation = require('./quotation')
+var _invoice = require('./invoice')
 var _vendor = require('./vendor')
 var _leave_req = require('./leave_req')
 var _ip_addr = require('./ip_addr')
@@ -24,6 +25,7 @@ function initModels(sequelize) {
   var purchase_order = _purchase_order(sequelize, DataTypes)
   var query = _query(sequelize, DataTypes)
   var quotation = _quotation(sequelize, DataTypes)
+  var invoice = _invoice(sequelize, DataTypes)
   var vendor = _vendor(sequelize, DataTypes)
   var leave_req = _leave_req(sequelize, DataTypes)
   var ip_addr = _ip_addr(sequelize, DataTypes)
@@ -75,6 +77,7 @@ function initModels(sequelize) {
     vendor,
     leave_req,
     ip_addr,
+    invoice,
   }
 }
 module.exports = initModels
