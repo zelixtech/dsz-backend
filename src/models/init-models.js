@@ -60,8 +60,8 @@ function initModels(sequelize) {
   query.hasMany(followup, { as: 'followups', foreignKey: 'query_id' })
   quotation.belongsTo(query, { as: 'query', foreignKey: 'query_id' })
   query.hasMany(quotation, { as: 'quotations', foreignKey: 'query_id' })
-  product.belongsTo(quotation, { as: 'quotation', foreignKey: 'quotation_id' })
-  quotation.hasMany(product, { as: 'products', foreignKey: 'quotation_id' })
+  invoice.belongsTo(client, { as: 'client', foreignKey: 'client_id' })
+  client.hasMany(invoice, { as: 'invoices', foreignKey: 'client_id' })
 
   return {
     attendance,
