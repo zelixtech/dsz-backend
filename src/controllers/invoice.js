@@ -30,17 +30,27 @@ const createInvoice = async (req, res) => {
       throw new Error('ValidationError')
     }
     const payload = {
-      client_id: req.body.data.client.client_id,
-      invoice_data: JSON.stringify(req.body.data),
+      client_id: req.params.client_id,
+      invoice_data: JSON.stringify(req.body.data.invoice_data),
+    }
+
+    if (isNaN(payload.client_id) || !payload.invoice_data) {
+      throw new Error('ValidationError')
+    }
+
+    const client = await db.client.findByPk(payload.client_id)
+
+    if (!client) {
+      throw new Error('NotFound')
     }
 
     payload.invoice_financial_year = getFinancialYear()
 
     const lastInvoice = await db.invoice.findAll({
-      order: [['invoice_number', 'DESC']],
       where: {
-        client_id: req.body.data.client.client_id,
+        invoice_financial_year: payload.invoice_financial_year,
       },
+      order: [['invoice_number', 'DESC']],
       limit: 1,
     })
 
@@ -57,7 +67,7 @@ const createInvoice = async (req, res) => {
     const generatedInvoiceNumber = buildInvoiceNumber(
       invoice.invoice_number,
       invoice.invoice_financial_year,
-      req.body.data.client.client_name.charAt(0)
+      req.body.data.invoice_data[0].sender.name.charAt(0)
     )
 
     return res.status(200).json({
@@ -87,7 +97,137 @@ const createInvoice = async (req, res) => {
     if (err.message === 'NotFound') {
       return res.status(404).json({
         errorType: 'Not Found',
-        errorMessage: 'Query Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const retrieveInvoice = async (req, res) => {
+  try {
+    const invoice_id = parseInt(req.params.invoice_id)
+    if (isNaN(invoice_id)) {
+      throw new Error('ValidationError')
+    }
+
+    let invoice = await db.invoice.findByPk(invoice_id)
+    if (invoice === null) {
+      throw new Error('NotFound')
+    } else {
+      const invoice_data = JSON.parse(invoice.dataValues.invoice_data)
+      const generatedInvoiceNumber = buildInvoiceNumber(
+        invoice.invoice_number,
+        invoice.invoice_count_no,
+        invoice.invoice_financial_year,
+        invoice_data[0].sender.name.charAt(0)
+      )
+
+      return res.status(200).json({
+        error: false,
+        data: invoice,
+        generatedInvoiceNumber,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'TypeError') {
+      return res.status(422).json({
+        error: true,
+        errorMessage: 'Error Caused Due to Incorrect Invoice Data',
+        errorType: 'Unprocessable Entity',
+      })
+    }
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Invoice Not Found',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
+const retrieveInvoicesOfClient = async (req, res) => {
+  try {
+    const client_id = parseInt(req.params.client_id)
+    if (isNaN(client_id)) {
+      throw new Error('ValidationError')
+    }
+
+    let invoices = await db.invoice.findAll({
+      where: {
+        client_id: client_id,
+      },
+    })
+
+    if (invoices.length === 0) {
+      throw new Error('NotFound')
+    } else {
+      invoices.forEach((invoice, index) => {
+        const invoice_data = JSON.parse(invoice.dataValues.invoice_data)
+
+        const generatedInvoiceNumber = buildInvoiceNumber(
+          invoice.dataValues.invoice_number,
+          invoice.dataValues.invoice_count_no,
+          invoice.dataValues.invoice_financial_year,
+          invoice_data[0].sender.name.charAt(0)
+        )
+
+        invoices[index].dataValues.generatedinvoiceNumber =
+          generatedInvoiceNumber
+      })
+
+      return res.status(200).json({
+        error: false,
+        data: invoices,
+      })
+    }
+  } catch (err) {
+    console.log(err)
+
+    if (err.message === 'TypeError') {
+      return res.status(422).json({
+        error: true,
+        errorMessage: 'Error Caused Due to Incorrect Invoice Data',
+        errorType: 'Unprocessable Entity',
+      })
+    }
+
+    if (err.message === 'ValidationError') {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Invoices Not Found',
         error: true,
       })
     }
@@ -102,4 +242,6 @@ const createInvoice = async (req, res) => {
 
 module.exports = {
   createInvoice,
+  retrieveInvoice,
+  retrieveInvoicesOfClient,
 }
