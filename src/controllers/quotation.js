@@ -60,19 +60,30 @@ const createQuotation = async (req, res) => {
     payload.quotation_financial_year = getFinancialYear()
 
     const lastQuote = await db.quotation.findAll({
+      where: {
+        quotation_financial_year: payload.quotation_financial_year,
+      },
       order: [['quotation_number', 'DESC']],
       limit: 1,
     })
 
     if (lastQuote.length === 0) {
-      payload.quotation_number = '0000'
+      payload.quotation_number = '0001'
       payload.quotation_count_no = 0
       const quotation = db.quotation.build(payload)
       await quotation.save()
 
+      const generatedQuotationNumber = buildQuotationNumber(
+        quotation.quotation_number,
+        quotation.quotation_count_no,
+        quotation.quotation_financial_year,
+        req.body.data.quotation_data[0].sender.name.charAt(0)
+      )
+
       return res.status(200).json({
         error: false,
         data: quotation,
+        generatedQuotationNumber,
       })
     }
 
