@@ -29,6 +29,7 @@ const createInvoice = async (req, res) => {
     if (!req.body.data) {
       throw new Error('ValidationError')
     }
+
     const payload = {
       client_id: req.params.client_id,
       invoice_data: JSON.stringify(req.body.data.invoice_data),
@@ -61,6 +62,7 @@ const createInvoice = async (req, res) => {
         parseInt(lastInvoice[0].invoice_number) + 1
       ).padStart(4, '0')
     }
+
     const invoice = db.invoice.build(payload)
     await invoice.save()
 
@@ -76,7 +78,7 @@ const createInvoice = async (req, res) => {
       generatedInvoiceNumber,
     })
   } catch (err) {
-    console.log(err, 101)
+    console.log(err)
 
     if (err.name === 'TypeError' || err.message === 'ValidationError') {
       return res.status(400).json({
@@ -124,7 +126,6 @@ const retrieveInvoice = async (req, res) => {
       const invoice_data = JSON.parse(invoice.dataValues.invoice_data)
       const generatedInvoiceNumber = buildInvoiceNumber(
         invoice.invoice_number,
-        invoice.invoice_count_no,
         invoice.invoice_financial_year,
         invoice_data[0].sender.name.charAt(0)
       )
@@ -191,12 +192,11 @@ const retrieveInvoicesOfClient = async (req, res) => {
 
         const generatedInvoiceNumber = buildInvoiceNumber(
           invoice.dataValues.invoice_number,
-          invoice.dataValues.invoice_count_no,
           invoice.dataValues.invoice_financial_year,
           invoice_data[0].sender.name.charAt(0)
         )
 
-        invoices[index].dataValues.generatedinvoiceNumber =
+        invoices[index].dataValues.generatedInvoiceNumber =
           generatedInvoiceNumber
       })
 
