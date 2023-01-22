@@ -23,6 +23,17 @@ const getStats = async (req, res) => {
       group: ['client_blocked'],
       attributes: ['client_blocked', ['COUNT(*)', 'count']],
     })
+    console.log(no_of_clients)
+    if (no_of_clients.length === 0) {
+      no_of_clients[0] = {
+        client_blocked: 0,
+        count: 0,
+      }
+      no_of_clients[1] = {
+        client_blocked: 1,
+        count: 0,
+      }
+    }
 
     const no_of_queries = await db.query.findAll({
       where: {
@@ -33,6 +44,25 @@ const getStats = async (req, res) => {
       group: ['query_state'],
       attributes: ['query_state', ['COUNT(*)', 'count']],
     })
+
+    if (no_of_queries.length === 0) {
+      no_of_queries[0] = {
+        query_state: 'running',
+        count: 0,
+      }
+      no_of_queries[1] = {
+        query_state: 'lost',
+        count: 0,
+      }
+      no_of_queries[2] = {
+        query_state: 'new',
+        count: 0,
+      }
+      no_of_queries[3] = {
+        query_state: 'done',
+        count: 0,
+      }
+    }
 
     const no_of_quotations = await db.quotation.count({
       where: {
