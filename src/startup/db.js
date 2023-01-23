@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize')
 const models = require('../models/init-models')
 const expressSession = require('express-session')
 const SessionStore = require('express-session-sequelize')(expressSession.Store)
+require('dotenv').config()
 
 const sequelize = new Sequelize(
   process.env.DB,
@@ -13,6 +14,9 @@ const sequelize = new Sequelize(
     pool: {
       max: 100,
     },
+    /*dialectOptions: {
+      socketPath: '/var/run/mysqld/mysqld.sock',
+    },*/
   }
 )
 
