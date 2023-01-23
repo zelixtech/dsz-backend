@@ -14,9 +14,9 @@ const sequelize = new Sequelize(
     pool: {
       max: 100,
     },
-    /*dialectOptions: {
+    dialectOptions: {
       socketPath: '/var/run/mysqld/mysqld.sock',
-    },*/
+    },
   }
 )
 
