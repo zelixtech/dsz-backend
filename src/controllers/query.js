@@ -382,11 +382,11 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     if (error) {
       throw new Error('ValidationError')
     }
-console.log(payload.employee_id)
-console.log(req.session.employee_id)
-console.log(req.session.isHR)
-console.log(req.session.isAdmin)
-console.log(payload)
+    console.log(payload.employee_id)
+    console.log(req.session.employee_id)
+    console.log(req.session.isHR)
+    console.log(req.session.isAdmin)
+    console.log(payload)
     if (
       payload.employee_id !== req.session.employee_id ||
       !req.session.isAdmin ||
@@ -583,6 +583,10 @@ const assignQueryToEmployee = async (req, res) => {
       throw new Error('NotFound')
     }
 
+    if (result.dataValues.employee_id) {
+      throw new Error('Conflict')
+    }
+
     await result.update({
       employee_id: payload.employee_id,
       query_state: 'running',
@@ -611,6 +615,14 @@ const assignQueryToEmployee = async (req, res) => {
       return res.status(404).json({
         errorType: 'Not Found',
         errorMessage: 'Query Not Found',
+        error: true,
+      })
+    }
+
+    if (err.message === 'Conflict') {
+      return res.status(409).json({
+        errorType: 'Conflict',
+        errorMessage: 'Query Already Assigned',
         error: true,
       })
     }
