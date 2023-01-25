@@ -10,6 +10,20 @@ const allowEmployee = (req, res, next) => {
   }
 }
 
+const allowLocal = (req, res, next) => {
+console.log(req.body.data.isLocalhost);
+console.log(req.body.data);
+  if (req.body.data.isLocalhost || req.session.isAuthenticated) {
+    next()
+  } else {
+    return res.status(401).send({
+      success: false,
+      errorType: 'UnAuthorized',
+      errorMessage: 'UnAuthorized User! Access Denied',
+    })
+  }
+}
+
 const allowHR = (req, res, next) => {
   if (req.session.isHR) {
     next()
@@ -46,4 +60,4 @@ const allowBothAdminAndHR = (req, res, next) => {
   }
 }
 
-module.exports = { allowEmployee, allowAdmin, allowHR, allowBothAdminAndHR }
+module.exports = { allowEmployee, allowAdmin, allowHR, allowBothAdminAndHR, allowLocal }

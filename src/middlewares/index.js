@@ -3,6 +3,7 @@ const {
   allowAdmin,
   allowHR,
   allowBothAdminAndHR,
+  allowLocal
 } = require('./auth')
 
-module.exports = { allowAdmin, allowBothAdminAndHR, allowEmployee, allowHR }
+module.exports = { allowAdmin, allowBothAdminAndHR, allowEmployee, allowHR, allowLocal }

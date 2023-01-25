@@ -15,7 +15,7 @@ const { expressSession, sequelizeSessionStore } = require('./db')
 // const expressSession = require('express-session');
 require('dotenv').config()
 const corsOptions = {
-  origin: '*',
+  origin: 'https://www.darshansafety.in',
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 }
@@ -30,7 +30,29 @@ var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
 })
 
 module.exports = (app) => {
-  app.use(cors(corsOptions))
+  app.set('trust proxy', 1)
+//  app.use((req, res, next) => {
+  //  console.log(req.connection.remoteAddress);
+//console.log(req.headers);
+//next();
+ // })
+//  app.use(cors(corsOptions))
+app.use(function (req, res, next) {
+
+  var allowedDomains = ['https://www.darshansafety.in','http://localhost:8000' ];
+  var origin = req.headers.origin;
+console.log(origin);
+  if(allowedDomains.indexOf(origin) > -1){
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
+  next();
+})
+
   app.use(helmet())
   app.use(morgan('combined', { stream: accessLogStream }))
   app.use(bodyParser.json())
@@ -51,7 +73,6 @@ module.exports = (app) => {
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: false,
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
       },
     })
@@ -70,7 +91,7 @@ module.exports = (app) => {
 /*
 done
 POST /api/employee/
-GET /api/employee/:id
+GET /api/employe/:id
 PATCH /api/employee/
 DELETE /api/employee/
 

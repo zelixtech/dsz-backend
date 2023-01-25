@@ -375,14 +375,18 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
   try {
     const payload = {
       query_state: req.query.query_state,
-      employee_id: req.query.employee_id,
+      employee_id: parseInt(req.query.employee_id),
     }
     const { error } = validateEmpQueryWithStatus(payload)
 
     if (error) {
       throw new Error('ValidationError')
     }
-
+console.log(payload.employee_id)
+console.log(req.session.employee_id)
+console.log(req.session.isHR)
+console.log(req.session.isAdmin)
+console.log(payload)
     if (
       payload.employee_id !== req.session.employee_id ||
       !req.session.isAdmin ||

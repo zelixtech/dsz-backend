@@ -30,6 +30,8 @@ const login = async (req, res) => {
       },
     })
 
+    if(!result) {throw new Error('NotFound') }
+
     const checkPassword = await bcrypt.compare(
       payload.password,
       result.dataValues.employee_password
@@ -67,6 +69,7 @@ const login = async (req, res) => {
       req.session.isAdmin = result.dataValues.employee_isAdmin
       req.session.isHR = result.dataValues.employee_isHR
       req.session.employee_id = result.dataValues.employee_id
+      res.cookie('thisiscookie', 'cookie value', {maxAge: 90000, httpOnly:false}) 
 
       return res.status(200).json({
         data: result,
@@ -89,6 +92,14 @@ const login = async (req, res) => {
       return res.status(400).json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Employee Not Found',
         error: true,
       })
     }
@@ -358,7 +369,7 @@ const leaveNotificationToHR = async (req, res) => {
       throw new Error('ValidationError')
     }
 
-    if (req.session.id !== payload.employee_id) {
+    if (req.session.employee_id !== payload.employee_id) {
       throw new Error('Forbidden')
     }
 

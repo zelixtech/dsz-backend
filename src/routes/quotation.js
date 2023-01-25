@@ -8,9 +8,10 @@ const {
   allowAdmin,
   allowHR,
   allowBothAdminAndHR,
+  allowLocal
 } = require('../middlewares')
 
-router.post('/:query_id', allowEmployee, quotationController.createQuotation)
+router.post('/:query_id', allowLocal, quotationController.createQuotation)
 
 router.get(
   '/:quotation_id',

@@ -3,9 +3,9 @@ const express = require('express')
 const router = express.Router()
 
 const { invoiceController } = require('../controllers/')
-const { allowEmployee } = require('../middlewares')
+const { allowEmployee, allowLocal } = require('../middlewares')
 
-router.post('/:client_id', allowEmployee, invoiceController.createInvoice)
+router.post('/:client_id', allowLocal, invoiceController.createInvoice)
 router.get('/:invoice_id', allowEmployee, invoiceController.retrieveInvoice)
 router.get(
   '/all/:client_id',
