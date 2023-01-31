@@ -49,7 +49,7 @@ const createClient = async (req, res) => {
       data: client,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'Conflict') {
       return res.status(409).json({
@@ -95,7 +95,7 @@ const retrieveClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -177,7 +177,7 @@ const updateClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.json({
@@ -237,7 +237,7 @@ const blockClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
     if (err.message === 'NotFound') {
       return res.status(404).json({
         errorType: 'Not Found',
@@ -288,7 +288,7 @@ const unblockClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -330,7 +330,7 @@ const retrieveAllActiveClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (
       err.message === 'ValidationError' ||
@@ -375,7 +375,7 @@ const retrieveAllActiveClientsInGivenTime = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (
       err.message === 'ValidationError' ||
@@ -420,7 +420,7 @@ const retrieveAllBlockedClientsInGivenTime = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -442,7 +442,7 @@ const retrieveAllBlockedClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -482,7 +482,7 @@ const checkClientExists = async (req, res) => {
       message: 'Client does not exists',
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
     if (err.message === 'Conflict') {
       return res.status(409).json({
         errorType: 'Conflict',
@@ -517,7 +517,7 @@ const deleteClient = async (req, res) => {
       throw new Error('ValidationError')
     }
 
-    let count = await db.client.destroy(client_id)
+    let count = await db.client.destroy({ where: { client_id: client_id } })
     if (!count) {
       throw new Error('NotFound')
     } else {
@@ -527,7 +527,7 @@ const deleteClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
