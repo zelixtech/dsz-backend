@@ -246,8 +246,8 @@ const updateQueryStatus = async (req, res) => {
       throw new Error('NotFound')
     } else {
       if (
-        result.dataValues.employee_id !== req.session.employee_id ||
-        !req.session.isAdmin ||
+        result.dataValues.employee_id !== req.session.employee_id &&
+        !req.session.isAdmin &&
         !req.session.isHR
       ) {
         throw new Error('Forbidden')
@@ -388,8 +388,8 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     console.log(req.session.isAdmin)
     console.log(payload)
     if (
-      payload.employee_id !== req.session.employee_id ||
-      !req.session.isAdmin ||
+      payload.employee_id !== req.session.employee_id &&
+      !req.session.isAdmin &&
       !req.session.isHR
     ) {
       throw new Error('Forbidden')
