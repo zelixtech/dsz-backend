@@ -11,8 +11,8 @@ const allowEmployee = (req, res, next) => {
 }
 
 const allowLocal = (req, res, next) => {
-console.log(req.body.data.isLocalhost);
-console.log(req.body.data);
+  console.log(req.body.data.isLocalhost)
+  console.log(req.body.data)
   if (req.body.data.isLocalhost || req.session.isAuthenticated) {
     next()
   } else {
@@ -49,6 +49,7 @@ const allowAdmin = (req, res, next) => {
 }
 
 const allowBothAdminAndHR = (req, res, next) => {
+  console.log(req.session)
   if (req.session.isAdmin || req.session.isHR) {
     next()
   } else {
@@ -60,4 +61,10 @@ const allowBothAdminAndHR = (req, res, next) => {
   }
 }
 
-module.exports = { allowEmployee, allowAdmin, allowHR, allowBothAdminAndHR, allowLocal }
+module.exports = {
+  allowEmployee,
+  allowAdmin,
+  allowHR,
+  allowBothAdminAndHR,
+  allowLocal,
+}
