@@ -7,6 +7,7 @@ const {
 } = require('../utils/validate')
 const { Op } = require('sequelize')
 const moment = require('moment')
+const { apiLogger } = require('../startup/logger')
 
 const createQuery = async (req, res) => {
   try {
@@ -55,7 +56,7 @@ const createQuery = async (req, res) => {
       data: newQuery,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -109,7 +110,7 @@ const getQuery = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -188,7 +189,7 @@ const updateQuery = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -268,7 +269,7 @@ const updateQueryStatus = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -332,7 +333,7 @@ const getAllQueriesOfActiveClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -361,7 +362,7 @@ const getAllQueriesOfBlockedClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -382,11 +383,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     if (error) {
       throw new Error('ValidationError')
     }
-    // console.log(payload.employee_id)
-    // console.log(req.session.employee_id)
-    // console.log(req.session.isHR)
-    // console.log(req.session.isAdmin)
-    // console.log(payload)
+
     if (
       payload.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&
@@ -414,7 +411,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -469,7 +466,7 @@ const getAllQueriesOfAClient = async (req, res) => {
       },
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -521,7 +518,7 @@ const getAllUnassignedQueriesActive = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -554,7 +551,7 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -602,7 +599,7 @@ const assignQueryToEmployee = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(404).json({
         errorType: 'Bad Request',
@@ -676,7 +673,7 @@ const retrieveAllQueriesInGivenTime = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -730,7 +727,7 @@ const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -782,7 +779,7 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -842,7 +839,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'ValidationError') {
       return res.status(400).json({

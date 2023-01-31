@@ -324,7 +324,7 @@ const validateLeaveNotification = (notif) => {
 //     }
 //   }
 //   catch (err) {
-//     console.log(err);
+//     apiLogger.error(err);
 //     console.log('er');
 //   }
 // })();

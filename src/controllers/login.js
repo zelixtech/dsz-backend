@@ -8,6 +8,7 @@ const {
   validateAttendanceUpdate,
   validateLeaveNotification,
 } = require('../utils/validate')
+const { apiLogger } = require('../startup/logger')
 
 const login = async (req, res) => {
   try {
@@ -30,7 +31,9 @@ const login = async (req, res) => {
       },
     })
 
-    if(!result) {throw new Error('NotFound') }
+    if (!result) {
+      throw new Error('NotFound')
+    }
 
     const checkPassword = await bcrypt.compare(
       payload.password,
@@ -69,7 +72,10 @@ const login = async (req, res) => {
       req.session.isAdmin = result.dataValues.employee_isAdmin
       req.session.isHR = result.dataValues.employee_isHR
       req.session.employee_id = result.dataValues.employee_id
-      res.cookie('thisiscookie', 'cookie value', {maxAge: 90000, httpOnly:false}) 
+      res.cookie('thisiscookie', 'cookie value', {
+        maxAge: 90000,
+        httpOnly: false,
+      })
 
       return res.status(200).json({
         data: result,
@@ -83,7 +89,7 @@ const login = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -186,7 +192,7 @@ const getAttendanceOfEachEmployee = async (req, res) => {
       data: attendancesOfEachEmployee,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -244,7 +250,6 @@ const getAttendanceOfAEmployee = async (req, res) => {
       leave = 0
 
     result.forEach((e) => {
-      console.log(e)
       let d = parseInt(moment(e.date_of_attendance).format('DD'))
       arr[d - 1] = e.attendance_status
     })
@@ -273,7 +278,7 @@ const getAttendanceOfAEmployee = async (req, res) => {
       },
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -330,7 +335,7 @@ const updateAttendanceOfAEmployee = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -381,8 +386,7 @@ const leaveNotificationToHR = async (req, res) => {
       data: notif,
     })
   } catch (err) {
-    console.log(err.name)
-    console.log(err)
+    apiLogger.error(err)
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(400).json({
         error: true,
@@ -482,7 +486,7 @@ const updateLeaveReqStatus = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.message === 'NotFound') {
       return res.status(404).json({
         errorType: 'Not Found',
@@ -513,7 +517,7 @@ const deleteLeaveReq = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({

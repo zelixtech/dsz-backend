@@ -3,6 +3,11 @@ const models = require('../models/init-models')
 const expressSession = require('express-session')
 const SessionStore = require('express-session-sequelize')(expressSession.Store)
 require('dotenv').config()
+const { dbLogger, apiLogger } = require('./logger')
+
+const dbLogging = (msg) => {
+  dbLogger.info(msg)
+}
 
 const sequelize = new Sequelize(
   process.env.DB,
@@ -17,6 +22,7 @@ const sequelize = new Sequelize(
     dialectOptions: {
       socketPath: '/var/run/mysqld/mysqld.sock',
     },
+    logging: dbLogging,
   }
 )
 
@@ -24,7 +30,7 @@ const createPool = async () => {
   try {
     await sequelize.authenticate()
     // await sequelize.sync({ alter: true })
-    console.log('Connection has been established successfully.')
+    apiLogger.info('Connection has been established successfully.')
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }

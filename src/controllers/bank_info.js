@@ -1,5 +1,6 @@
 const { db } = require('../startup/db')
 const { validateBankInfo } = require('../utils/validate')
+const { apiLogger } = require('../startup/logger')
 
 const updateEmployeeBankInfo = async (req, res) => {
   try {
@@ -48,7 +49,7 @@ const updateEmployeeBankInfo = async (req, res) => {
       data: newEmployeeBankInfo,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(404).json({
@@ -102,7 +103,7 @@ const retrieveEmployeeBankInfo = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',

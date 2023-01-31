@@ -1,6 +1,7 @@
 const { db, sequelize } = require('../startup/db')
 const { validateTimeInterval } = require('../utils/validate')
 const { Op } = require('sequelize')
+const { apiLogger } = require('../startup/logger')
 
 const getStats = async (req, res) => {
   try {
@@ -8,10 +9,9 @@ const getStats = async (req, res) => {
       startTime: new Date(req.query.start_time),
       endTime: new Date(req.query.end_time),
     }
-    // console.log(payload)
 
     const { error } = validateTimeInterval(payload)
-    // console.log(error)
+
     if (error) throw new Error('ValidationError')
 
     const no_of_clients = await db.client.count({
@@ -23,7 +23,7 @@ const getStats = async (req, res) => {
       group: ['client_blocked'],
       attributes: ['client_blocked', ['COUNT(*)', 'count']],
     })
-    console.log(no_of_clients)
+
     if (no_of_clients.length === 0) {
       no_of_clients[0] = {
         client_blocked: 0,
@@ -81,7 +81,7 @@ const getStats = async (req, res) => {
       },
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -113,7 +113,7 @@ const addIpAddress = async (req, res) => {
       data: ip_address,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -146,7 +146,7 @@ const removeIpAddress = async (req, res) => {
       message: `${itemsDeleted} item(s) deleted successfully`,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -172,7 +172,7 @@ const showAllIpAddresses = async (req, res) => {
       data: ip_addresses,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',

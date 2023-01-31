@@ -1,7 +1,7 @@
 const { productDetails } = require('../Data')
 const { db } = require('../startup/db')
+const { apiLogger } = require('../startup/logger')
 
-// console.log(JSON.stringify(productDetails).length)
 const createProductList = async () => {
   try {
     const payload = {
@@ -19,10 +19,10 @@ const createProductList = async () => {
       await productList.save()
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'ValidationError') {
-      console.log({
+      apiLogger.info({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',
         error: true,
@@ -30,7 +30,7 @@ const createProductList = async () => {
       return
     }
 
-    console.log({
+    apiLogger.info({
       errorType: 'Server Error',
       errorMessage: 'Internal Server Error',
       error: true,

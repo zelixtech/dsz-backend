@@ -1,5 +1,6 @@
 const { db } = require('../startup/db')
 const { validateFollowup, validateFollowupText } = require('../utils/validate')
+const { apiLogger } = require('../startup/logger')
 
 const createFollowup = async (req, res) => {
   try {
@@ -42,7 +43,7 @@ const createFollowup = async (req, res) => {
       data: followup,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
     if (
       err.message === 'NotFound' ||
       err.name === 'SequelizeForeignKeyConstraintError'
@@ -117,7 +118,7 @@ const getFollowupsForQuery = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'Forbidden') {
       return res.status(403).json({
@@ -199,7 +200,7 @@ const updateFollowup = async (req, res) => {
       data: followup,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({

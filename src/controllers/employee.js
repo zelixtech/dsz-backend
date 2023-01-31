@@ -8,6 +8,7 @@ const {
 } = require('../utils/validate')
 const saltRounds = 10
 const bcrypt = require('bcrypt')
+const { apiLogger } = require('../startup/logger')
 
 const createEmployee = async (req, res) => {
   try {
@@ -60,7 +61,7 @@ const createEmployee = async (req, res) => {
       message: 'Employee Created',
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'Conflict') {
       return res.status(409).json({
@@ -108,7 +109,7 @@ const retrieveEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -188,7 +189,7 @@ const updateEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
@@ -255,7 +256,7 @@ const deleteEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -292,7 +293,7 @@ const retrieveAllEmployees = async (req, res) => {
       data: employees,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -334,7 +335,7 @@ const checkEmpExists = async (req, res) => {
       message: 'Employee does not Exists',
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'Conflict') {
       return res.status(409).json({

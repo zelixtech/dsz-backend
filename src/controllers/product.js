@@ -1,4 +1,5 @@
 const { db } = require('../startup/db')
+const { apiLogger } = require('../startup/logger')
 
 const appendProduct = async (req, res) => {
   try {
@@ -27,7 +28,7 @@ const appendProduct = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -50,7 +51,7 @@ const retrieveProductList = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -88,7 +89,7 @@ const deleteProductFromList = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     return res.status(500).json({
       errorType: 'Server Error',

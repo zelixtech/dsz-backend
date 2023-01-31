@@ -19,23 +19,22 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 }
+// var { morganLogger } = require('./logger')
 var morgan = require('morgan')
 var fs = require('fs')
 var path = require('path')
 const { default: helmet } = require('helmet')
 const toobusy = require('toobusy-js')
 const compression = require('compression')
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
-  flags: 'a',
-})
+var accessLogStream = fs.createWriteStream(
+  path.join(__dirname, '/../../logs/morgan.log'),
+  {
+    flags: 'a',
+  }
+)
 
 module.exports = (app) => {
   app.set('trust proxy', 1)
-  //  app.use((req, res, next) => {
-  //  console.log(req.connection.remoteAddress);
-  //console.log(req.headers);
-  //next();
-  // })
   //  app.use(cors(corsOptions))
   app.use(function (req, res, next) {
     var allowedDomains = [
@@ -43,7 +42,6 @@ module.exports = (app) => {
       'http://localhost:8000',
     ]
     var origin = req.headers.origin
-    // console.log(origin);
     if (allowedDomains.indexOf(origin) > -1) {
       res.setHeader('Access-Control-Allow-Origin', origin)
     }

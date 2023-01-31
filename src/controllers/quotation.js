@@ -1,5 +1,6 @@
 const { db } = require('../startup/db')
 const moment = require('moment')
+const { apiLogger } = require('../startup/logger')
 
 function getFinancialYear() {
   const currentDate = moment()
@@ -127,7 +128,7 @@ const createQuotation = async (req, res) => {
       generatedQuotationNumber,
     })
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.name === 'TypeError' || err.message === 'ValidationError') {
       return res.status(400).json({
@@ -187,7 +188,7 @@ const retrieveQuotation = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'TypeError') {
       return res.status(422).json({
@@ -256,7 +257,7 @@ const retrieveQuotationsOfQuery = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    apiLogger.error(err)
 
     if (err.message === 'TypeError') {
       return res.status(422).json({
