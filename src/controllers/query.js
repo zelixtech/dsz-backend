@@ -56,7 +56,7 @@ const createQuery = async (req, res) => {
       data: newQuery,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -110,7 +110,7 @@ const getQuery = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -189,7 +189,7 @@ const updateQuery = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -269,7 +269,7 @@ const updateQueryStatus = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -333,7 +333,7 @@ const getAllQueriesOfActiveClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -362,7 +362,7 @@ const getAllQueriesOfBlockedClients = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -411,7 +411,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -466,7 +466,7 @@ const getAllQueriesOfAClient = async (req, res) => {
       },
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -518,7 +518,7 @@ const getAllUnassignedQueriesActive = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -551,7 +551,7 @@ const getAllUnassignedQueriesBlocked = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -599,7 +599,7 @@ const assignQueryToEmployee = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(404).json({
         errorType: 'Bad Request',
@@ -673,7 +673,7 @@ const retrieveAllQueriesInGivenTime = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -727,7 +727,7 @@ const retrieveAllQueriesInGivenTimeBlocked = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -779,7 +779,7 @@ const getQueriesCreatedUnAssigned = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -839,7 +839,7 @@ const getQueriesRunningNoFollowup = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'ValidationError') {
       return res.status(400).json({

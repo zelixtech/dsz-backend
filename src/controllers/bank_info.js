@@ -49,7 +49,7 @@ const updateEmployeeBankInfo = async (req, res) => {
       data: newEmployeeBankInfo,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(404).json({
@@ -103,7 +103,7 @@ const retrieveEmployeeBankInfo = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',

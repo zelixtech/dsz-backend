@@ -43,7 +43,7 @@ const createFollowup = async (req, res) => {
       data: followup,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (
       err.message === 'NotFound' ||
       err.name === 'SequelizeForeignKeyConstraintError'
@@ -118,7 +118,7 @@ const getFollowupsForQuery = async (req, res) => {
       data: result,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'Forbidden') {
       return res.status(403).json({
@@ -200,7 +200,7 @@ const updateFollowup = async (req, res) => {
       data: followup,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'NotFound') {
       return res.status(404).json({

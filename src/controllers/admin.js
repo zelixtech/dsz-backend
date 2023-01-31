@@ -81,7 +81,7 @@ const getStats = async (req, res) => {
       },
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -113,7 +113,7 @@ const addIpAddress = async (req, res) => {
       data: ip_address,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -146,7 +146,7 @@ const removeIpAddress = async (req, res) => {
       message: `${itemsDeleted} item(s) deleted successfully`,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.message === 'ValidationError') {
       return res.status(400).json({
         errorType: 'Bad Request',
@@ -172,7 +172,7 @@ const showAllIpAddresses = async (req, res) => {
       data: ip_addresses,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',

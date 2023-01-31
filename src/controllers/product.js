@@ -28,7 +28,7 @@ const appendProduct = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -51,7 +51,7 @@ const retrieveProductList = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -89,7 +89,7 @@ const deleteProductFromList = async (req, res) => {
       data: productList,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     return res.status(500).json({
       errorType: 'Server Error',

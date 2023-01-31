@@ -89,7 +89,7 @@ const login = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -192,7 +192,7 @@ const getAttendanceOfEachEmployee = async (req, res) => {
       data: attendancesOfEachEmployee,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -278,7 +278,7 @@ const getAttendanceOfAEmployee = async (req, res) => {
       },
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -335,7 +335,7 @@ const updateAttendanceOfAEmployee = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (
       err.message === 'ValidationError' ||
@@ -386,7 +386,7 @@ const leaveNotificationToHR = async (req, res) => {
       data: notif,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(400).json({
         error: true,
@@ -486,7 +486,7 @@ const updateLeaveReqStatus = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
     if (err.message === 'NotFound') {
       return res.status(404).json({
         errorType: 'Not Found',
@@ -517,7 +517,7 @@ const deleteLeaveReq = async (req, res) => {
       error: false,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'NotFound') {
       return res.status(404).json({

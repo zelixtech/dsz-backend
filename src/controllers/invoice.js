@@ -79,7 +79,7 @@ const createInvoice = async (req, res) => {
       generatedInvoiceNumber,
     })
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.name === 'TypeError' || err.message === 'ValidationError') {
       return res.status(400).json({
@@ -138,7 +138,7 @@ const retrieveInvoice = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'TypeError') {
       return res.status(422).json({
@@ -207,7 +207,7 @@ const retrieveInvoicesOfClient = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'TypeError') {
       return res.status(422).json({

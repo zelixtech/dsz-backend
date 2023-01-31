@@ -12,7 +12,7 @@ app.get('/', async (req, res) => {
   try {
     res.send('HELLO')
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
   }
 })
 

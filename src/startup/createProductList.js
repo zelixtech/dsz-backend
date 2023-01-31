@@ -19,7 +19,7 @@ const createProductList = async () => {
       await productList.save()
     }
   } catch (err) {
-    apiLogger.error(err)
+    apiLogger.error(`Error: `,{...err})
 
     if (err.message === 'ValidationError') {
       apiLogger.info({
