@@ -31,27 +31,35 @@ var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
 
 module.exports = (app) => {
   app.set('trust proxy', 1)
-//  app.use((req, res, next) => {
+  //  app.use((req, res, next) => {
   //  console.log(req.connection.remoteAddress);
-//console.log(req.headers);
-//next();
- // })
-//  app.use(cors(corsOptions))
-app.use(function (req, res, next) {
+  //console.log(req.headers);
+  //next();
+  // })
+  //  app.use(cors(corsOptions))
+  app.use(function (req, res, next) {
+    var allowedDomains = [
+      'https://www.darshansafety.in',
+      'http://localhost:8000',
+    ]
+    var origin = req.headers.origin
+    // console.log(origin);
+    if (allowedDomains.indexOf(origin) > -1) {
+      res.setHeader('Access-Control-Allow-Origin', origin)
+    }
 
-  var allowedDomains = ['https://www.darshansafety.in','http://localhost:8000' ];
-  var origin = req.headers.origin;
-console.log(origin);
-  if(allowedDomains.indexOf(origin) > -1){
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+    )
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'X-Requested-With,content-type, Accept'
+    )
+    res.setHeader('Access-Control-Allow-Credentials', true)
 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  next();
-})
+    next()
+  })
 
   app.use(helmet())
   app.use(morgan('combined', { stream: accessLogStream }))

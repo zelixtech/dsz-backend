@@ -55,7 +55,7 @@ const createQuery = async (req, res) => {
       data: newQuery,
     })
   } catch (err) {
-    console.log({ err })
+    console.log(err)
 
     if (
       err.message === 'ValidationError' ||
@@ -382,11 +382,11 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
     if (error) {
       throw new Error('ValidationError')
     }
-    console.log(payload.employee_id)
-    console.log(req.session.employee_id)
-    console.log(req.session.isHR)
-    console.log(req.session.isAdmin)
-    console.log(payload)
+    // console.log(payload.employee_id)
+    // console.log(req.session.employee_id)
+    // console.log(req.session.isHR)
+    // console.log(req.session.isAdmin)
+    // console.log(payload)
     if (
       payload.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&

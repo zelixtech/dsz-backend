@@ -8,7 +8,7 @@ const getStats = async (req, res) => {
       startTime: new Date(req.query.start_time),
       endTime: new Date(req.query.end_time),
     }
-    console.log(payload)
+    // console.log(payload)
 
     const { error } = validateTimeInterval(payload)
     // console.log(error)
