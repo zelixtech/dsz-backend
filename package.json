@@ -37,7 +37,8 @@
     "number-to-words": "^1.2.4",
     "pdf-creator-node": "^2.3.5",
     "sequelize": "^6.25.7",
-    "toobusy-js": "^0.5.1"
+    "toobusy-js": "^0.5.1",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "eslint": "^8.27.0",
