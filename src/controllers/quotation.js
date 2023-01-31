@@ -177,7 +177,7 @@ const retrieveQuotation = async (req, res) => {
         quotation.quotation_number,
         quotation.quotation_count_no,
         quotation.quotation_financial_year,
-        quotation_data[0].sender.name.charAt(0)
+        quotation_data.sender.name.charAt(0)
       )
 
       return res.status(200).json({
@@ -243,7 +243,7 @@ const retrieveQuotationsOfQuery = async (req, res) => {
           quotation.dataValues.quotation_number,
           quotation.dataValues.quotation_count_no,
           quotation.dataValues.quotation_financial_year,
-          quotation_data[0].sender.name.charAt(0)
+          quotation_data.sender.name.charAt(0)
         )
 
         quotations[index].dataValues.generatedQuotationNumber =

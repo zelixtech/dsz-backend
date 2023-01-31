@@ -127,7 +127,7 @@ const retrieveInvoice = async (req, res) => {
       const generatedInvoiceNumber = buildInvoiceNumber(
         invoice.invoice_number,
         invoice.invoice_financial_year,
-        invoice_data[0].sender.name.charAt(0)
+        invoice_data.sender.name.charAt(0)
       )
 
       return res.status(200).json({
@@ -193,7 +193,7 @@ const retrieveInvoicesOfClient = async (req, res) => {
         const generatedInvoiceNumber = buildInvoiceNumber(
           invoice.dataValues.invoice_number,
           invoice.dataValues.invoice_financial_year,
-          invoice_data[0].sender.name.charAt(0)
+          invoice_data.sender.name.charAt(0)
         )
 
         invoices[index].dataValues.generatedInvoiceNumber =

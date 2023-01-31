@@ -79,7 +79,7 @@ const updateEmployeeBankInfo = async (req, res) => {
 
 const retrieveEmployeeBankInfo = async (req, res) => {
   try {
-    if (!req.body.data) {
+    if (!req.params.employee_id) {
       throw new Error('ValidationError')
     }
     const employee_id = parseInt(req.params.employee_id)

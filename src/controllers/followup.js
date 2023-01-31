@@ -99,7 +99,7 @@ const getFollowupsForQuery = async (req, res) => {
     }
 
     if (
-      getQuery.alues.employee_id !== req.session.employee_id &&
+      getQuery.dataValues.employee_id !== req.session.employee_id &&
       !req.session.isAdmin &&
       !req.session.isHR
     ) {
