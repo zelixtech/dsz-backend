@@ -232,27 +232,18 @@ const deleteEmployee = async (req, res) => {
       throw new Error('ValidationError')
     }
     const employee_id = parseInt(req.params.employee_id)
-    const payload = {
-      employee_relieve_date: req.body.data.employee_relieve_date,
-    }
 
-    const { error } = validateDate(payload.employee_relieve_date)
-
-    if (isNaN(employee_id) || error) {
+    if (isNaN(employee_id)) {
       throw new Error('ValidationError')
     }
 
-    let result = await db.employee.findByPk(employee_id)
-    if (result === null) {
+    let count = await db.employee.destroy(employee_id)
+    if (!count) {
       throw new Error('NotFound')
     } else {
-      await result.update({
-        employee_relieve_date: payload.employee_relieve_date,
-      })
-
       return res.status(200).json({
         error: false,
-        data: result,
+        data: count,
       })
     }
   } catch (err) {

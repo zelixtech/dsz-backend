@@ -506,6 +506,56 @@ const checkClientExists = async (req, res) => {
   }
 }
 
+const deleteClient = async (req, res) => {
+  try {
+    if (!req.body.data) {
+      throw new Error('ValidationError')
+    }
+    const client_id = parseInt(req.params.client_id)
+
+    if (isNaN(client_id)) {
+      throw new Error('ValidationError')
+    }
+
+    let count = await db.client.destroy(client_id)
+    if (!count) {
+      throw new Error('NotFound')
+    } else {
+      return res.status(200).json({
+        error: false,
+        data: count,
+      })
+    }
+  } catch (err) {
+    apiLogger.error(err)
+
+    if (err.message === 'NotFound') {
+      return res.status(404).json({
+        errorType: 'Not Found',
+        errorMessage: 'Client Not Found',
+        error: true,
+      })
+    }
+
+    if (
+      err.message === 'ValidationError' ||
+      err.name === 'SequelizeValidationError'
+    ) {
+      return res.status(400).json({
+        errorType: 'Bad Request',
+        errorMessage: 'Validation Error',
+        error: true,
+      })
+    }
+
+    return res.status(500).json({
+      errorType: 'Server Error',
+      errorMessage: 'Internal Server Error',
+      error: true,
+    })
+  }
+}
+
 module.exports = {
   createClient,
   retrieveClient,
@@ -517,4 +567,5 @@ module.exports = {
   checkClientExists,
   retrieveAllActiveClientsInGivenTime,
   retrieveAllBlockedClientsInGivenTime,
+  deleteClient,
 }

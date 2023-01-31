@@ -50,4 +50,6 @@ router.patch(
   clientController.unblockClient
 )
 
+router.delete('/:client_id', allowEmployee, clientController.deleteClient)
+
 module.exports = router

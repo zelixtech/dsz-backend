@@ -72,6 +72,7 @@ module.exports = function (sequelize, DataTypes) {
       sequelize,
       tableName: 'client',
       timestamps: true,
+      paranoid: true,
       indexes: [
         {
           name: 'PRIMARY',
