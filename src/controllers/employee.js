@@ -61,7 +61,7 @@ const createEmployee = async (req, res) => {
       message: 'Employee Created',
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'Conflict') {
       return res.status(409).json({
@@ -109,7 +109,7 @@ const retrieveEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -189,7 +189,7 @@ const updateEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
@@ -234,7 +234,11 @@ const deleteEmployee = async (req, res) => {
       throw new Error('ValidationError')
     }
 
-    let count = await db.employee.destroy(employee_id)
+    let count = await db.employee.destroy({
+      where: {
+        employee_id: employee_id,
+      },
+    })
     if (!count) {
       throw new Error('NotFound')
     } else {
@@ -244,8 +248,7 @@ const deleteEmployee = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'NotFound') {
       return res.status(404).json({
@@ -282,7 +285,7 @@ const retrieveAllEmployees = async (req, res) => {
       data: employees,
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     return res.status(500).json({
       errorType: 'Server Error',
@@ -324,7 +327,7 @@ const checkEmpExists = async (req, res) => {
       message: 'Employee does not Exists',
     })
   } catch (err) {
-    apiLogger.error(`Error: `,{...err})
+    apiLogger.error(`Error: `, { ...err })
 
     if (err.message === 'Conflict') {
       return res.status(409).json({
