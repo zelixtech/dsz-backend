@@ -277,7 +277,7 @@ const updateQueryStatus = async (req, res) => {
       })
     }
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',
@@ -427,7 +427,7 @@ const getAllQueriesAssignedToEmployee = async (req, res) => {
       })
     }
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',

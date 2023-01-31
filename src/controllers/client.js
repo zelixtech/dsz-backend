@@ -490,7 +490,7 @@ const checkClientExists = async (req, res) => {
       })
     }
 
-    if (err.name == 'ValidationError') {
+    if (err.message == 'ValidationError') {
       return res.json({
         errorType: 'Bad Request',
         errorMessage: 'Validation Error',

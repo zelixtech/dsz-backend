@@ -54,7 +54,7 @@ const createFollowup = async (req, res) => {
       })
     }
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',
@@ -119,7 +119,7 @@ const getFollowupsForQuery = async (req, res) => {
   } catch (err) {
     console.log(err)
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',
@@ -209,7 +209,7 @@ const updateFollowup = async (req, res) => {
       })
     }
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',

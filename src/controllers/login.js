@@ -402,7 +402,7 @@ const leaveNotificationToHR = async (req, res) => {
       })
     }
 
-    if (err.name === 'Forbidden') {
+    if (err.message === 'Forbidden') {
       return res.status(403).json({
         error: true,
         errorType: 'Forbidden',
